@@ -41,7 +41,7 @@ git clone https://github.com/TON_USERNAME/rcr-react.git
 cd rcr-react
 ```
 
-2. Backend
+### 2. Backend
 
 cd backend
 cp .env.dist .env # copier le fichier d'environnement
@@ -62,14 +62,14 @@ npx prisma migrate dev
 
 npm run dev
 
-3. Frontend
+### 3. Frontend
 
 cd frontend
 cp .env.dist .env
 npm install
 npm run dev
 
-4.Structure du Projet
+### 4.Structure du Projet
 
 rcr-react/
 ├── backend/ # API REST Node.js
@@ -103,7 +103,7 @@ rcr-react/
 ├── CONTRIBUTING.md
 └── README.md
 
-5. Module de l'application
+### 5. Module de l'application
 
 Module Description
 Auth Connexion, inscription, reset mot de passe
@@ -114,3 +114,7 @@ Blog Articles publiés, brouillons, illustration
 Voting Élections, choix, votes, résultats
 Activités Événements et activités de l'organisation
 Mada Référentiel géographique (Province/Région/District/Commune/Fokontany)
+
+### 6. Contribuer
+
+Lire CONTRIBUTING.md avant de soumettre du code.
