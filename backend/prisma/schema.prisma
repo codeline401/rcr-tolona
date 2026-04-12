@@ -1,0 +1,404 @@
+// ============================================================
+// PRISMA SCHEMA — RCR
+// Ce fichier définit toutes les tables de la base de données.
+// Après chaque modification ici, il faut lancer :
+//   npx prisma migrate dev --name nom_de_la_migration
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// MODULE MADA — Géographie de Madagascar
+// Province > Région > District > Commune > Fokontany > Adresse
+// ============================================================
+
+model Province {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  regions   Region[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Region {
+  id         String     @id @default(uuid())
+  name       String     @unique
+  code       String?    @unique // ex: "A", "B"...
+  order      Int?
+  province   Province   @relation(fields: [provinceId], references: [id])
+  provinceId String
+  districts  District[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model District {
+  id               String           @id @default(uuid())
+  name             String           @unique
+  code             String?
+  isValid          Boolean          @default(false)
+  isArrondissement Boolean          @default(false)
+  region           Region           @relation(fields: [regionId], references: [id])
+  regionId         String
+  communes         Commune[]
+  adresses         Adresse[]
+  compteFinancier  CompteFinancier? // chaque district a une caisse
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model Commune {
+  id         String      @id @default(uuid())
+  name       String
+  district   District    @relation(fields: [districtId], references: [id])
+  districtId String
+  fokontanys Fokontany[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model Fokontany {
+  id        String    @id @default(uuid())
+  name      String
+  commune   Commune   @relation(fields: [communeId], references: [id])
+  communeId String
+  adresses  Adresse[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Adresse {
+  id          String     @id @default(uuid())
+  district    District?  @relation(fields: [districtId], references: [id])
+  districtId  String?
+  fokontany   Fokontany? @relation(fields: [fokontanyId], references: [id])
+  fokontanyId String?
+  membres     Membre[] // les membres qui habitent à cette adresse
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+// ============================================================
+// MODULE AUTH / USER — Authentification
+// ============================================================
+
+model User {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  password    String // mot de passe hashé avec bcrypt (JAMAIS en clair)
+  isActive    Boolean   @default(true)
+  isStaff     Boolean   @default(false) // accès admin
+  isSuperuser Boolean   @default(false) // accès total
+  lastLogin   DateTime?
+
+  // Relations
+  membre    Membre? // un User peut être lié à un Membre
+  blogPosts Post[] // articles rédigés par cet utilisateur
+  votes     Vote[] // votes effectués
+
+  // Les membres créés par cet utilisateur
+  membresCreated Membre[] @relation("CreatedBy")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================
+// MODULE MEMBRE
+// ============================================================
+
+model Pays {
+  id      String  @id @default(uuid())
+  name    String  @unique
+  drapeau String? // chemin vers l'image du drapeau
+
+  membres         Membre[] // membres de ce pays (diaspora)
+  compteFinancier CompteFinancier? // caisse diaspora pour ce pays
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Membre {
+  id String @id @default(uuid())
+
+  // --- Informations personnelles ---
+  nom           String
+  prenom        String?
+  sexe          String // "M" = Masculin, "F" = Féminin
+  dateNaissance DateTime
+  cin           String   @unique // Carte d'identité nationale
+  passeport     String?
+
+  // Adresse & nationalité
+  nationalite     Pays?    @relation(fields: [nationaliteId], references: [id])
+  nationaliteId   String?
+  adresse         Adresse? @relation(fields: [adresseId], references: [id])
+  adresseId       String?
+  adresseEtranger String? // si le membre est à l'étranger
+
+  // Contacts
+  telephone String
+  email     String?
+
+  // --- Parcours RCR ---
+  formationRcr    Boolean @default(false) // a suivi une formation RCR ?
+  anneeDecouverte String // année où il a découvert le mouvement
+  canalDecouverte String // comment il a découvert (réseaux sociaux, ami...)
+  motivation      String
+  attentes        String?
+
+  // --- Formation & métier ---
+  niveauEtude     String
+  metier          String
+  secteurActivite String?
+  engagement      String
+
+  // --- Consentement & statut ---
+  membreActif     Boolean @default(true)
+  partageContacts Boolean @default(false) // accepte de partager ses contacts
+  statut          String  @default("actif") // "actif" | "passif"
+  canVote         Boolean @default(false)
+
+  // Photo de profil
+  photo String? // chemin vers l'image
+
+  // --- Matricule (système de codification interne) ---
+  codeRegion           String?
+  codeDistrict         String?
+  codeDivision         String?
+  divisionNumber       Int?
+  divisionAlphanumeric String?
+  registrationNumber   String? @unique // numéro de matricule final
+
+  // --- Relations ---
+  utilisateur   User?   @relation(fields: [utilisateurId], references: [id])
+  utilisateurId String? @unique // un User = un seul Membre
+  hasUser       Boolean @default(true)
+
+  createdBy   User?   @relation("CreatedBy", fields: [createdById], references: [id])
+  createdById String?
+
+  cotisations        Cotisation[] // cotisations de ce membre
+  caisseIndividuelle CompteFinancier? // caisse personnelle (pour collecteurs)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================
+// MODULE COTISATION
+// ============================================================
+
+// Une campagne = une période de collecte (ex: "Cotisation 2025")
+model CampagneCotisation {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  annee     Int
+  dateDebut DateTime  @default(now())
+  dateFin   DateTime?
+  active    Boolean   @default(true)
+
+  cotisations Cotisation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Type de cotisation = catégorie (ex: cotisation annuelle, adhésion...)
+model TypeCotisation {
+  id            String   @id @default(uuid())
+  name          String   @unique
+  description   String?
+  montantFixe   Decimal? @db.Decimal(10, 2) // montant fixé ou libre
+  nombreTranche Int      @default(1) // paiement en combien de fois
+  obligatoire   Boolean  @default(true)
+  actif         Boolean  @default(true)
+  isNewVersion  Boolean  @default(false)
+
+  cotisations Cotisation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// La cotisation d'un membre pour une campagne donnée
+model Cotisation {
+  id           String  @id @default(uuid())
+  montantTotal Decimal @default(0) @db.Decimal(10, 2)
+
+  membre           Membre             @relation(fields: [membreId], references: [id], onDelete: Cascade)
+  membreId         String
+  typeCotisation   TypeCotisation     @relation(fields: [typeCotisationId], references: [id])
+  typeCotisationId String
+  campagne         CampagneCotisation @relation(fields: [campagneId], references: [id])
+  campagneId       String
+
+  tranches Tranche[] // paiements par tranches
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Un paiement partiel d'une cotisation
+model Tranche {
+  id           String   @id @default(uuid())
+  montant      Decimal  @db.Decimal(10, 2)
+  datePaiement DateTime @default(now())
+  note         String?
+
+  cotisation   Cotisation @relation(fields: [cotisationId], references: [id], onDelete: Cascade)
+  cotisationId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================
+// MODULE FINANCE
+// ============================================================
+
+// Un compte = une caisse (centrale, district, diaspora, ou collecteur individuel)
+model CompteFinancier {
+  id    String  @id @default(uuid())
+  nom   String  @unique
+  solde Decimal @default(0) @db.Decimal(15, 2)
+  actif Boolean @default(true)
+
+  // Un seul de ces champs est non-null à la fois :
+  membre     Membre?   @relation(fields: [membreId], references: [id])
+  membreId   String?   @unique // caisse individuelle d'un collecteur
+  district   District? @relation(fields: [districtId], references: [id])
+  districtId String?   @unique // caisse de district
+  pays       Pays?     @relation(fields: [paysId], references: [id])
+  paysId     String?   @unique // caisse diaspora
+
+  // Si membre/district/pays sont tous NULL → c'est la caisse centrale
+  transactions TransactionFinanciere[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TransactionFinanciere {
+  id      String  @id @default(uuid())
+  type    String // "ENTREE" | "SORTIE"
+  source  String // "COTISATION" | "CONTRIBUTION" | "DEPENSE" | "AUTRE"
+  montant Decimal @db.Decimal(15, 2)
+  note    String?
+
+  compte   CompteFinancier @relation(fields: [compteId], references: [id])
+  compteId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================
+// MODULE BLOG
+// ============================================================
+
+model Post {
+  id           String   @id @default(uuid())
+  title        String
+  slug         String   @unique // URL conviviale ex: "mon-premier-article"
+  illustration String? // chemin vers l'image de couverture
+  excerpt      String? // résumé court (pour les listes)
+  body         String // contenu complet de l'article
+  publish      DateTime @default(now())
+  status       String   @default("DF") // "DF" = Brouillon, "PB" = Publié
+
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================
+// MODULE VOTING — Système de vote
+// ============================================================
+
+model Election {
+  id                String   @id @default(uuid())
+  title             String
+  slug              String   @unique
+  description       String?
+  startAt           DateTime
+  endAt             DateTime
+  public            Boolean  @default(true) // accessible à tous ou membres seulement
+  afficherResultats Boolean  @default(true) // afficher les résultats en direct
+
+  choices Choice[]
+  votes   Vote[]
+  tokens  VoteToken[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Choice {
+  id          String  @id @default(uuid())
+  text        String
+  description String?
+
+  election   Election @relation(fields: [electionId], references: [id], onDelete: Cascade)
+  electionId String
+  votes      Vote[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Vote {
+  id    String  @id @default(uuid())
+  token String? // pour les votes anonymes par token
+
+  election   Election @relation(fields: [electionId], references: [id])
+  electionId String
+  user       User?    @relation(fields: [userId], references: [id])
+  userId     String?
+  choice     Choice   @relation(fields: [choiceId], references: [id])
+  choiceId   String
+
+  createdAt DateTime @default(now())
+
+  // Un utilisateur ne peut voter qu'une seule fois par élection
+  @@unique([electionId, userId])
+}
+
+// Token à usage unique pour les votes anonymes
+model VoteToken {
+  id   String  @id @default(uuid())
+  code String  @unique @default(uuid())
+  used Boolean @default(false)
+
+  election   Election @relation(fields: [electionId], references: [id])
+  electionId String
+
+  createdAt DateTime @default(now())
+}
+
+// ============================================================
+// MODULE ACTIVITES
+// ============================================================
+
+model Activite {
+  id           String    @id @default(uuid())
+  title        String
+  description  String?
+  dateDebut    DateTime
+  dateFin      DateTime?
+  lieu         String?
+  illustration String?
+  publique     Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

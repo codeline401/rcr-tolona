@@ -1,0 +1,17 @@
+services:
+  # Base de données PostgreSQL pour le développement
+  db:
+    image: postgres:16-alpine
+    container_name: rcr_db_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: rcr_db # Nom de la base de données
+      POSTGRES_USER: codeline401 # Nom d'utilisateur pour la base de données
+      POSTGRES_PASSWORD: codeline401_mdp # Mot de passe pour la base de données
+    ports:
+      - "5432:5432" # Expose le port PostgreSQL pour les connexions externes
+    volumes:
+      - db_data_dev:/var/lib/postgresql/data # Volume pour persister les données de la base de données
+
+volumes:
+  db_data_dev: # Volume nommé pour la base de données en développement
