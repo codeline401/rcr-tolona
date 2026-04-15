@@ -97,6 +97,10 @@ model User {
   isSuperuser Boolean   @default(false) // accès total
   lastLogin   DateTime?
 
+  // Réinitialisation du mot de passe
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+
   // Relations
   membre    Membre? // un User peut être lié à un Membre
   blogPosts Post[] // articles rédigés par cet utilisateur
