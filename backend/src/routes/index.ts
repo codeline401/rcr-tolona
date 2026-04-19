@@ -8,7 +8,7 @@ import { Router } from "express";
 // Pour l'instant on les déclare en commentaire et on les activera une par une.
 
 import authRoutes from "../modules/auth/auth.routes";
-// import madaRoutes      from '../modules/mada/mada.routes';
+import madaRoutes from "../modules/mada/mada.routes";
 // import membreRoutes    from '../modules/membre/membre.routes';
 // import cotisRoutes     from '../modules/cotisation/cotisation.routes';
 // import financeRoutes   from '../modules/finance/finance.routes';
@@ -19,7 +19,7 @@ import authRoutes from "../modules/auth/auth.routes";
 const router = Router();
 
 router.use("/auth", authRoutes);
-// router.use('/mada',        madaRoutes);
+router.use("/mada", madaRoutes);
 // router.use('/membres',     membreRoutes);
 // router.use('/cotisations', cotisRoutes);
 // router.use('/finance',     financeRoutes);

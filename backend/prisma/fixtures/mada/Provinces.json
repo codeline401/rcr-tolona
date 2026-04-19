@@ -1,0 +1,62 @@
+[
+  {
+    "model": "mada.province",
+    "pk": 1,
+    "fields": {
+      "public_id": "1d0ca0f8-ccd6-4826-be52-ec6dffe95e8e",
+      "created": "2025-01-16T15:04:54.904Z",
+      "updated": "2025-01-16T15:25:05.958Z",
+      "name": "Antananarivo"
+    }
+  },
+  {
+    "model": "mada.province",
+    "pk": 2,
+    "fields": {
+      "public_id": "41a70ab4-fc56-4b42-9321-822a981cf81a",
+      "created": "2025-01-16T15:05:07.175Z",
+      "updated": "2025-01-16T15:25:38.862Z",
+      "name": "Antsiranana"
+    }
+  },
+  {
+    "model": "mada.province",
+    "pk": 3,
+    "fields": {
+      "public_id": "17b76b16-a853-40e6-9a1b-dc496f82498d",
+      "created": "2025-01-16T15:05:13.826Z",
+      "updated": "2025-01-16T15:27:54.369Z",
+      "name": "Fianarantsoa"
+    }
+  },
+  {
+    "model": "mada.province",
+    "pk": 4,
+    "fields": {
+      "public_id": "038bac2f-a374-4ab6-b4f8-7f3d7e478c6f",
+      "created": "2025-01-16T15:05:38.126Z",
+      "updated": "2025-01-16T15:29:36.003Z",
+      "name": "Mahajanga"
+    }
+  },
+  {
+    "model": "mada.province",
+    "pk": 5,
+    "fields": {
+      "public_id": "50516fcd-919f-4635-9577-a80eecf73a96",
+      "created": "2025-01-16T15:05:44.012Z",
+      "updated": "2025-01-16T15:30:59.825Z",
+      "name": "Toamasina"
+    }
+  },
+  {
+    "model": "mada.province",
+    "pk": 6,
+    "fields": {
+      "public_id": "1b6a9086-8c42-4718-830d-6099d321ec57",
+      "created": "2025-01-16T15:05:47.600Z",
+      "updated": "2025-01-16T15:31:55.676Z",
+      "name": "Toliara"
+    }
+  }
+]
