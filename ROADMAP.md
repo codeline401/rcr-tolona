@@ -23,19 +23,19 @@ Légende : ✅ Terminé · 🔄 En cours · ⬜ À faire
 
 ### Module Auth
 
-- ⬜ `POST /api/auth/login` — Connexion
-- ⬜ `POST /api/auth/register` — Inscription
-- ⬜ `POST /api/auth/forgot-password` — Mot de passe oublié
-- ⬜ `POST /api/auth/reset-password` — Réinitialisation
-- ⬜ `GET  /api/auth/me` — Profil connecté
+- ✅ `POST /api/auth/login` — Connexion
+- ✅ `POST /api/auth/register` — Inscription
+- ✅ `POST /api/auth/forgot-password` — Mot de passe oublié
+- ✅ `POST /api/auth/reset-password` — Réinitialisation
+- ✅ `GET  /api/auth/me` — Profil connecté
 
 ### Module Mada (référentiel géographique)
 
-- ⬜ `GET /api/mada/provinces`
-- ⬜ `GET /api/mada/regions`
-- ⬜ `GET /api/mada/districts`
-- ⬜ `GET /api/mada/communes`
-- ⬜ `GET /api/mada/fokontany`
+- ✅ `GET /api/mada/provinces`
+- ✅ `GET /api/mada/regions`
+- ✅ `GET /api/mada/districts`
+- ✅ `GET /api/mada/communes`
+- ✅ `GET /api/mada/fokontany`
 
 ### Module Membre
 
