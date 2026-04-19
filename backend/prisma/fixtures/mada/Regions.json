@@ -1,0 +1,266 @@
+[
+{
+    "model": "mada.region",
+    "pk": 1,
+    "fields": {
+        "public_id": "94ecde0d-1011-498d-8939-ef4a0dff530f",
+        "created": "2025-01-16T15:24:54.448Z",
+        "updated": "2025-01-16T15:24:54.448Z",
+        "name": "Analamanga",
+        "province": 1
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 2,
+    "fields": {
+        "public_id": "8a091f85-1a01-4870-8634-7bc7e73e2590",
+        "created": "2025-01-16T15:24:54.450Z",
+        "updated": "2025-01-16T15:24:54.450Z",
+        "name": "Vakinankaratra",
+        "province": 1
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 3,
+    "fields": {
+        "public_id": "9f7401ab-dd80-4923-9d3b-25967db3f9dc",
+        "created": "2025-01-16T15:24:54.450Z",
+        "updated": "2025-01-16T15:24:54.450Z",
+        "name": "Bongolava",
+        "province": 1
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 4,
+    "fields": {
+        "public_id": "202c61ba-cc14-4bf3-b78c-7f46b5a376db",
+        "created": "2025-01-16T15:24:54.451Z",
+        "updated": "2025-01-16T15:24:54.451Z",
+        "name": "Itasy",
+        "province": 1
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 5,
+    "fields": {
+        "public_id": "1e51e59b-686c-4231-9cf6-1c238a27f855",
+        "created": "2025-01-16T15:25:38.864Z",
+        "updated": "2025-01-16T15:25:38.864Z",
+        "name": "Diana",
+        "province": 2
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 6,
+    "fields": {
+        "public_id": "7e5eb6e7-65d4-4d95-9ddd-bcbb8cfe78e3",
+        "created": "2025-01-16T15:25:38.866Z",
+        "updated": "2025-01-16T15:25:38.866Z",
+        "name": "Sava",
+        "province": 2
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 7,
+    "fields": {
+        "public_id": "645b9cd2-ec94-4d0a-a46e-fe1c802c78e8",
+        "created": "2025-01-16T15:27:40.366Z",
+        "updated": "2025-01-16T15:27:40.366Z",
+        "name": "Amoron'i Mania",
+        "province": 3
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 8,
+    "fields": {
+        "public_id": "b675837d-4d25-4741-be81-6a58327eff75",
+        "created": "2025-01-16T15:27:40.368Z",
+        "updated": "2025-01-16T15:27:40.368Z",
+        "name": "Atsimo Atsinanana",
+        "province": 3
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 9,
+    "fields": {
+        "public_id": "c445b653-551f-40ce-9150-c13d5279e796",
+        "created": "2025-01-16T15:27:40.369Z",
+        "updated": "2025-01-16T15:27:40.369Z",
+        "name": "Fitovinany",
+        "province": 3
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 10,
+    "fields": {
+        "public_id": "1be822e3-73be-4e62-8568-b4ee905b6e3c",
+        "created": "2025-01-16T15:27:40.370Z",
+        "updated": "2025-01-16T15:27:40.370Z",
+        "name": "Haute Matsiatra",
+        "province": 3
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 11,
+    "fields": {
+        "public_id": "22f3bf88-d839-47d1-915e-d858204d2988",
+        "created": "2025-01-16T15:27:40.371Z",
+        "updated": "2025-01-16T15:27:40.371Z",
+        "name": "Ihorombe",
+        "province": 3
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 12,
+    "fields": {
+        "public_id": "28c20699-25ad-4052-90ab-2ed233f6d94a",
+        "created": "2025-01-16T15:27:40.371Z",
+        "updated": "2025-01-16T15:27:40.371Z",
+        "name": "Vatovavy",
+        "province": 3
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 13,
+    "fields": {
+        "public_id": "dab6a906-62ca-4a50-a0d3-1739662e4b99",
+        "created": "2025-01-16T15:29:36.005Z",
+        "updated": "2025-01-16T15:29:36.005Z",
+        "name": "Betsiboka",
+        "province": 4
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 14,
+    "fields": {
+        "public_id": "e7bcefc6-efce-4f0b-b99d-38894cef7047",
+        "created": "2025-01-16T15:29:36.007Z",
+        "updated": "2025-01-16T15:29:36.007Z",
+        "name": "Boeny",
+        "province": 4
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 15,
+    "fields": {
+        "public_id": "ebcb979e-6508-47fa-8bf4-12240c37906a",
+        "created": "2025-01-16T15:29:36.009Z",
+        "updated": "2025-01-16T15:29:36.009Z",
+        "name": "Melaky",
+        "province": 4
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 16,
+    "fields": {
+        "public_id": "b5dbe530-9d67-4831-82d4-a98eb47642b2",
+        "created": "2025-01-16T15:29:36.010Z",
+        "updated": "2025-01-16T15:29:36.010Z",
+        "name": "Sofia",
+        "province": 4
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 17,
+    "fields": {
+        "public_id": "e76fcfa0-156c-4120-b14b-3e1bf5428b9b",
+        "created": "2025-01-16T15:30:59.827Z",
+        "updated": "2025-01-16T15:30:59.827Z",
+        "name": "Alaotra Mangoro",
+        "province": 5
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 18,
+    "fields": {
+        "public_id": "07c96c43-e27c-4003-8b94-fe6b9549c0f0",
+        "created": "2025-01-16T15:30:59.828Z",
+        "updated": "2025-01-16T15:30:59.828Z",
+        "name": "Ambatosoa",
+        "province": 5
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 19,
+    "fields": {
+        "public_id": "48cc968b-f72f-482c-899a-9dd73996006a",
+        "created": "2025-01-16T15:30:59.830Z",
+        "updated": "2025-01-16T15:30:59.830Z",
+        "name": "Analanjirofo",
+        "province": 5
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 20,
+    "fields": {
+        "public_id": "3331c299-13fa-4376-bd2e-efa4f5d3501f",
+        "created": "2025-01-16T15:30:59.831Z",
+        "updated": "2025-01-16T15:30:59.831Z",
+        "name": "Atsinanana",
+        "province": 5
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 21,
+    "fields": {
+        "public_id": "25a50cf0-17ae-4e25-9809-0eff0b27fdd2",
+        "created": "2025-01-16T15:31:55.678Z",
+        "updated": "2025-01-16T15:31:55.678Z",
+        "name": "Androy",
+        "province": 6
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 22,
+    "fields": {
+        "public_id": "a237b50d-8028-4661-97c5-2b40ed10aa57",
+        "created": "2025-01-16T15:31:55.680Z",
+        "updated": "2025-01-16T15:31:55.680Z",
+        "name": "Anosy",
+        "province": 6
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 23,
+    "fields": {
+        "public_id": "15b7e240-5008-4a31-8122-a73667ecd665",
+        "created": "2025-01-16T15:31:55.682Z",
+        "updated": "2025-01-16T15:31:55.682Z",
+        "name": "Atsimo Andrefana",
+        "province": 6
+    }
+},
+{
+    "model": "mada.region",
+    "pk": 24,
+    "fields": {
+        "public_id": "0dec907f-ddec-46c7-b716-74d7ae650d52",
+        "created": "2025-01-16T15:31:55.684Z",
+        "updated": "2025-01-16T15:31:55.684Z",
+        "name": "Menabe",
+        "province": 6
+    }
+}
+]

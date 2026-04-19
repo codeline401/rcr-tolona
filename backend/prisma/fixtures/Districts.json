@@ -1,0 +1,1256 @@
+[
+{
+    "model": "mada.district",
+    "pk": 1,
+    "fields": {
+        "public_id": "41f6d977-8925-4a4f-ad60-26634912af04",
+        "created": "2025-01-16T15:36:24.376Z",
+        "updated": "2025-01-16T15:36:24.376Z",
+        "name": "Ambatondrazaka",
+        "region": 17
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 2,
+    "fields": {
+        "public_id": "4ed34b23-e4f8-4547-9f5d-99637184f1a7",
+        "created": "2025-01-16T15:36:24.385Z",
+        "updated": "2025-01-16T15:36:24.385Z",
+        "name": "Andilamena",
+        "region": 17
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 3,
+    "fields": {
+        "public_id": "99cf676e-a77f-42d9-bdaa-c1f8a025e457",
+        "created": "2025-01-16T15:36:24.391Z",
+        "updated": "2025-01-16T15:36:24.391Z",
+        "name": "Amparafaravola",
+        "region": 17
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 4,
+    "fields": {
+        "public_id": "9ee188e0-065d-49dc-8db2-34b205c92f77",
+        "created": "2025-01-16T15:36:24.395Z",
+        "updated": "2025-01-16T15:36:24.395Z",
+        "name": "Moramanga",
+        "region": 17
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 5,
+    "fields": {
+        "public_id": "88090d4e-1b63-40b4-baa8-b4fb0a2505ad",
+        "created": "2025-01-16T15:36:24.400Z",
+        "updated": "2025-01-16T15:36:24.400Z",
+        "name": "Anosibe An'ala",
+        "region": 17
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 6,
+    "fields": {
+        "public_id": "d1567e0f-3ac9-40a4-a1bb-ab8667151d4f",
+        "created": "2025-01-16T15:36:24.404Z",
+        "updated": "2025-01-16T15:36:24.404Z",
+        "name": "Ambositra",
+        "region": 7
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 7,
+    "fields": {
+        "public_id": "3c347b26-cb1c-47c8-9228-1306688c4493",
+        "created": "2025-01-16T15:36:24.408Z",
+        "updated": "2025-01-16T15:36:24.408Z",
+        "name": "Fandriana",
+        "region": 7
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 8,
+    "fields": {
+        "public_id": "fccd8fae-6710-4bf6-ba57-bb67fd2791ab",
+        "created": "2025-01-16T15:36:24.414Z",
+        "updated": "2025-01-16T15:36:24.414Z",
+        "name": "Ambatofinandrahana",
+        "region": 7
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 9,
+    "fields": {
+        "public_id": "e11deff3-28f9-4a95-a0a3-d30c0359b96e",
+        "created": "2025-01-16T15:36:24.419Z",
+        "updated": "2025-01-16T15:36:24.419Z",
+        "name": "Manandriana",
+        "region": 7
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 10,
+    "fields": {
+        "public_id": "9b83ece4-ffe8-43ee-858c-33407a269870",
+        "created": "2025-01-16T15:36:24.424Z",
+        "updated": "2025-01-16T15:36:24.424Z",
+        "name": "Antananarivo Renivohitra",
+        "region": 1
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 11,
+    "fields": {
+        "public_id": "002c9c03-3075-4f82-acec-0660d1c6d827",
+        "created": "2025-01-16T15:36:24.429Z",
+        "updated": "2025-01-16T15:36:24.429Z",
+        "name": "Ankazobe",
+        "region": 1
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 12,
+    "fields": {
+        "public_id": "fcf4693f-7ed1-4eda-9d1b-b849cf8a8ead",
+        "created": "2025-01-16T15:36:24.434Z",
+        "updated": "2025-01-16T15:36:24.434Z",
+        "name": "Anjozorobe",
+        "region": 1
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 13,
+    "fields": {
+        "public_id": "e038f98d-e502-4f41-8e37-4934d602cf42",
+        "created": "2025-01-16T15:36:24.439Z",
+        "updated": "2025-01-16T15:36:24.439Z",
+        "name": "Ambohidratrimo",
+        "region": 1
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 14,
+    "fields": {
+        "public_id": "949c960a-eabe-40cf-aba7-94dc1e08cd58",
+        "created": "2025-01-16T15:36:24.443Z",
+        "updated": "2025-01-16T15:36:24.443Z",
+        "name": "Manjakandriana",
+        "region": 1
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 15,
+    "fields": {
+        "public_id": "826d5b25-32b8-48ed-b4d2-07f853873743",
+        "created": "2025-01-16T15:36:24.448Z",
+        "updated": "2025-01-16T15:36:24.448Z",
+        "name": "Antananarivo Avaradrano",
+        "region": 1
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 16,
+    "fields": {
+        "public_id": "c43dde83-ca40-4747-ab24-b7b111c90575",
+        "created": "2025-01-16T15:36:24.454Z",
+        "updated": "2025-01-16T15:36:24.454Z",
+        "name": "Antananarivo Atsimondrano",
+        "region": 1
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 17,
+    "fields": {
+        "public_id": "0cc087ef-4271-46e2-b555-cb0c441773f5",
+        "created": "2025-01-16T15:36:24.461Z",
+        "updated": "2025-01-16T15:36:24.461Z",
+        "name": "Andramasina",
+        "region": 1
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 18,
+    "fields": {
+        "public_id": "9afab773-a74b-46d6-a1c1-032bb347bc94",
+        "created": "2025-01-16T15:36:24.468Z",
+        "updated": "2025-01-16T15:36:24.468Z",
+        "name": "Fenoarivo Atsinanana",
+        "region": 19
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 19,
+    "fields": {
+        "public_id": "a1fd665d-568f-4421-98f7-3a6f1e88d966",
+        "created": "2025-01-16T15:36:24.475Z",
+        "updated": "2025-01-16T15:36:24.475Z",
+        "name": "Maroantsetra",
+        "region": 19
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 20,
+    "fields": {
+        "public_id": "5726e812-61f6-4fca-93f7-208e42b07154",
+        "created": "2025-01-16T15:36:24.481Z",
+        "updated": "2025-01-16T15:36:24.481Z",
+        "name": "Mananara Avaratra",
+        "region": 19
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 21,
+    "fields": {
+        "public_id": "2eeea642-e8fa-4dd4-bfed-3417f356aa24",
+        "created": "2025-01-16T15:36:24.487Z",
+        "updated": "2025-01-16T15:36:24.487Z",
+        "name": "Soanierana Ivongo",
+        "region": 19
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 22,
+    "fields": {
+        "public_id": "8eb06035-e806-429b-8ae1-227e2f66cbe0",
+        "created": "2025-01-16T15:36:24.494Z",
+        "updated": "2025-01-16T15:36:24.494Z",
+        "name": "Nosy Boraha (Sainte Marie)",
+        "region": 19
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 23,
+    "fields": {
+        "public_id": "805a18f1-4f4e-4400-bf56-9344bb446bd7",
+        "created": "2025-01-16T15:36:24.501Z",
+        "updated": "2025-01-16T15:36:24.501Z",
+        "name": "Vavatenina",
+        "region": 19
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 24,
+    "fields": {
+        "public_id": "4f86350a-da19-4ed7-8d6d-7866165f5ce1",
+        "created": "2025-01-16T15:36:24.507Z",
+        "updated": "2025-01-16T15:36:24.507Z",
+        "name": "Ambovombe Androy",
+        "region": 21
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 25,
+    "fields": {
+        "public_id": "788bc2e9-8577-4ecc-8079-94c757915156",
+        "created": "2025-01-16T15:36:24.514Z",
+        "updated": "2025-01-16T15:36:24.514Z",
+        "name": "Bekily",
+        "region": 21
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 26,
+    "fields": {
+        "public_id": "10ea61ee-658b-4cbc-90e7-27ca1b43df73",
+        "created": "2025-01-16T15:36:24.520Z",
+        "updated": "2025-01-16T15:36:24.520Z",
+        "name": "Beloha Androy",
+        "region": 21
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 27,
+    "fields": {
+        "public_id": "ee4432d2-acbd-4b0c-a78d-6d90dcc5d0af",
+        "created": "2025-01-16T15:36:24.528Z",
+        "updated": "2025-01-16T15:36:24.528Z",
+        "name": "Tsihombe",
+        "region": 21
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 28,
+    "fields": {
+        "public_id": "c9bf353c-6d44-4e1e-bab1-8ca580063917",
+        "created": "2025-01-16T15:36:24.534Z",
+        "updated": "2025-01-16T15:36:24.534Z",
+        "name": "Taolagnaro",
+        "region": 22
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 29,
+    "fields": {
+        "public_id": "36c7fa56-a575-4231-8710-afd7d69c8a5a",
+        "created": "2025-01-16T15:36:24.541Z",
+        "updated": "2025-01-16T15:36:24.541Z",
+        "name": "Betroka",
+        "region": 22
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 30,
+    "fields": {
+        "public_id": "a42887a0-4c15-4419-8ae2-9390886c078e",
+        "created": "2025-01-16T15:36:24.548Z",
+        "updated": "2025-01-16T15:36:24.548Z",
+        "name": "Amboasary Sud",
+        "region": 22
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 31,
+    "fields": {
+        "public_id": "e5f8f1b1-5fa5-46e9-b366-ae455797ed23",
+        "created": "2025-01-16T15:36:24.554Z",
+        "updated": "2025-01-16T15:36:24.554Z",
+        "name": "Toliara I",
+        "region": 23
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 32,
+    "fields": {
+        "public_id": "ae9cc9ce-78bb-4ce4-9de7-41071c09639c",
+        "created": "2025-01-16T15:36:24.561Z",
+        "updated": "2025-01-16T15:36:24.561Z",
+        "name": "Beroroha",
+        "region": 23
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 33,
+    "fields": {
+        "public_id": "4fb6b7f0-011a-4e9f-b67b-3750e5e0888a",
+        "created": "2025-01-16T15:36:24.568Z",
+        "updated": "2025-01-16T15:36:24.568Z",
+        "name": "Morombe",
+        "region": 23
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 34,
+    "fields": {
+        "public_id": "edb1dcf9-f9c2-4918-bf66-f6cbe4430715",
+        "created": "2025-01-16T15:36:24.575Z",
+        "updated": "2025-01-16T15:36:24.575Z",
+        "name": "Ankazoabo Atsimo",
+        "region": 23
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 35,
+    "fields": {
+        "public_id": "c838ff3f-3f8e-440b-9cae-7142d9fd8e86",
+        "created": "2025-01-16T15:36:24.582Z",
+        "updated": "2025-01-16T15:36:24.582Z",
+        "name": "Sakaraha",
+        "region": 23
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 36,
+    "fields": {
+        "public_id": "2db76e41-63f5-4bfa-9b59-223e90bef124",
+        "created": "2025-01-16T15:36:24.588Z",
+        "updated": "2025-01-16T15:36:24.588Z",
+        "name": "Toliara II",
+        "region": 23
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 37,
+    "fields": {
+        "public_id": "97d606e3-1b9b-4fcf-a3f3-a4fdd75bc47f",
+        "created": "2025-01-16T15:36:24.595Z",
+        "updated": "2025-01-16T15:36:24.595Z",
+        "name": "Benenitra",
+        "region": 23
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 38,
+    "fields": {
+        "public_id": "cadb2844-a01d-4737-8f55-5820bb909a50",
+        "created": "2025-01-16T15:36:24.601Z",
+        "updated": "2025-01-16T15:36:24.601Z",
+        "name": "Betioky Atsimo",
+        "region": 23
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 39,
+    "fields": {
+        "public_id": "477e0d04-3adc-4bde-86da-7aacd4019def",
+        "created": "2025-01-16T15:36:24.608Z",
+        "updated": "2025-01-16T15:36:24.608Z",
+        "name": "Ampanihy Ouest",
+        "region": 23
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 40,
+    "fields": {
+        "public_id": "fd6805f1-4c3e-4b7e-aea9-fc1d42302869",
+        "created": "2025-01-16T15:36:24.614Z",
+        "updated": "2025-01-16T15:36:24.614Z",
+        "name": "Farafangana",
+        "region": 8
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 41,
+    "fields": {
+        "public_id": "0231ba23-6414-4928-8402-e84cb2174c04",
+        "created": "2025-01-16T15:36:24.620Z",
+        "updated": "2025-01-16T15:36:24.620Z",
+        "name": "Vondrozo",
+        "region": 8
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 42,
+    "fields": {
+        "public_id": "2703d7e7-c3c8-4794-8ad6-d8098cb4a498",
+        "created": "2025-01-16T15:36:24.628Z",
+        "updated": "2025-01-16T15:36:24.628Z",
+        "name": "Vangaindrano",
+        "region": 8
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 43,
+    "fields": {
+        "public_id": "adc94b5f-0f8a-4de2-84a4-0cfcbd580b67",
+        "created": "2025-01-16T15:36:24.635Z",
+        "updated": "2025-01-16T15:36:24.635Z",
+        "name": "Midongy Du Sud",
+        "region": 8
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 44,
+    "fields": {
+        "public_id": "7259d9f7-8086-4b43-8725-9de8b4995b10",
+        "created": "2025-01-16T15:36:24.642Z",
+        "updated": "2025-01-16T15:36:24.642Z",
+        "name": "Befotaka",
+        "region": 8
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 45,
+    "fields": {
+        "public_id": "4c847a68-5519-4924-8de2-a8444daeb0d8",
+        "created": "2025-01-16T15:36:24.649Z",
+        "updated": "2025-01-16T15:36:24.649Z",
+        "name": "Toamasina I",
+        "region": 20
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 46,
+    "fields": {
+        "public_id": "f44f4647-44ac-4667-861a-83d84860b126",
+        "created": "2025-01-16T15:36:24.656Z",
+        "updated": "2025-01-16T15:36:24.656Z",
+        "name": "Toamasina II",
+        "region": 20
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 47,
+    "fields": {
+        "public_id": "ffbe60e6-bd77-4c34-9980-3ea3640e60a3",
+        "created": "2025-01-16T15:36:24.663Z",
+        "updated": "2025-01-16T15:36:24.663Z",
+        "name": "Vohibinany (Brickaville)",
+        "region": 20
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 48,
+    "fields": {
+        "public_id": "204e7eeb-002e-4632-bab7-73ee11a11c55",
+        "created": "2025-01-16T15:36:24.671Z",
+        "updated": "2025-01-16T15:36:24.671Z",
+        "name": "Vatomandry",
+        "region": 20
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 49,
+    "fields": {
+        "public_id": "6eb73fdf-f77b-4191-933b-8a36446dfd4c",
+        "created": "2025-01-16T15:36:24.678Z",
+        "updated": "2025-01-16T15:36:24.678Z",
+        "name": "Antanambao Manampontsy",
+        "region": 20
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 50,
+    "fields": {
+        "public_id": "1c176da5-8eb7-4e7a-bdeb-70e5bdc0000f",
+        "created": "2025-01-16T15:36:24.685Z",
+        "updated": "2025-01-16T15:36:24.685Z",
+        "name": "Mahanoro",
+        "region": 20
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 51,
+    "fields": {
+        "public_id": "0487fe30-c69d-4455-8f37-acd75693534d",
+        "created": "2025-01-16T15:36:24.692Z",
+        "updated": "2025-01-16T15:36:24.692Z",
+        "name": "Marolambo",
+        "region": 20
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 52,
+    "fields": {
+        "public_id": "408b5502-2ee7-4da2-8beb-bdcde2e18a06",
+        "created": "2025-01-16T15:36:24.699Z",
+        "updated": "2025-01-16T15:36:24.699Z",
+        "name": "Maevatanana",
+        "region": 13
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 53,
+    "fields": {
+        "public_id": "e7cee385-4f5b-4242-98b3-8bbeb7404203",
+        "created": "2025-01-16T15:36:24.706Z",
+        "updated": "2025-01-16T15:36:24.706Z",
+        "name": "Tsaratanana",
+        "region": 13
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 54,
+    "fields": {
+        "public_id": "155ed06b-ddbd-48ef-ac4d-25a4b7d86985",
+        "created": "2025-01-16T15:36:24.713Z",
+        "updated": "2025-01-16T15:36:24.713Z",
+        "name": "Kandreho",
+        "region": 13
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 55,
+    "fields": {
+        "public_id": "5fb6702c-8b54-40eb-b1fb-73050af32e02",
+        "created": "2025-01-16T15:36:24.720Z",
+        "updated": "2025-01-16T15:36:24.720Z",
+        "name": "Mahajanga I",
+        "region": 14
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 56,
+    "fields": {
+        "public_id": "f382282f-55ed-43f0-bf6a-96e15f56d8b5",
+        "created": "2025-01-16T15:36:24.727Z",
+        "updated": "2025-01-16T15:36:24.727Z",
+        "name": "Mahajanga II",
+        "region": 14
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 57,
+    "fields": {
+        "public_id": "3cdc3e48-4344-49c3-ac5d-d8c018fdfb58",
+        "created": "2025-01-16T15:36:24.734Z",
+        "updated": "2025-01-16T15:36:24.735Z",
+        "name": "Mitsinjo",
+        "region": 14
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 58,
+    "fields": {
+        "public_id": "2df7d475-bc00-44e4-a73a-c50a34bfc4d5",
+        "created": "2025-01-16T15:36:24.742Z",
+        "updated": "2025-01-16T15:36:24.742Z",
+        "name": "Marovoay",
+        "region": 14
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 59,
+    "fields": {
+        "public_id": "489320b4-b950-48bf-b892-40f7e729310c",
+        "created": "2025-01-16T15:36:24.749Z",
+        "updated": "2025-01-16T15:36:24.749Z",
+        "name": "Soalala",
+        "region": 14
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 60,
+    "fields": {
+        "public_id": "60780d4d-1490-4c88-a0da-090e9b6b3cab",
+        "created": "2025-01-16T15:36:24.756Z",
+        "updated": "2025-01-16T15:36:24.756Z",
+        "name": "Ambatoboeny",
+        "region": 14
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 61,
+    "fields": {
+        "public_id": "f2d7d0c2-9b1f-49a4-ae0c-efe838b0b655",
+        "created": "2025-01-16T15:36:24.762Z",
+        "updated": "2025-01-16T15:36:24.762Z",
+        "name": "Tsiroanomandidy",
+        "region": 3
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 62,
+    "fields": {
+        "public_id": "c5e82ceb-d531-4998-9c23-85addccfe718",
+        "created": "2025-01-16T15:36:24.769Z",
+        "updated": "2025-01-16T15:52:34.864Z",
+        "name": "Fenoarivobe",
+        "region": 3
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 63,
+    "fields": {
+        "public_id": "f2ad586c-8e6d-4899-904a-0d011eedb65e",
+        "created": "2025-01-16T15:36:24.775Z",
+        "updated": "2025-01-16T15:36:24.775Z",
+        "name": "Antsiranana I",
+        "region": 5
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 64,
+    "fields": {
+        "public_id": "08f2febc-dea0-492c-b2ce-dfaedd94811d",
+        "created": "2025-01-16T15:36:24.782Z",
+        "updated": "2025-01-16T15:36:24.782Z",
+        "name": "Antsiranana II",
+        "region": 5
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 65,
+    "fields": {
+        "public_id": "cf3b4b23-2400-4ace-bd98-f2f890b2e636",
+        "created": "2025-01-16T15:36:24.789Z",
+        "updated": "2025-01-16T15:36:24.789Z",
+        "name": "Ambilobe",
+        "region": 5
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 66,
+    "fields": {
+        "public_id": "fcf431be-6205-4207-8f77-b13a3b9d1b5d",
+        "created": "2025-01-16T15:36:24.796Z",
+        "updated": "2025-01-16T15:36:24.796Z",
+        "name": "Nosy Be",
+        "region": 5
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 67,
+    "fields": {
+        "public_id": "01817535-2224-47bf-8aa9-4717048f5ed9",
+        "created": "2025-01-16T15:36:24.803Z",
+        "updated": "2025-01-16T15:36:24.803Z",
+        "name": "Ambanja",
+        "region": 5
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 68,
+    "fields": {
+        "public_id": "b3767ae4-608e-44a9-8210-8ca79ab2e304",
+        "created": "2025-01-16T15:36:24.811Z",
+        "updated": "2025-01-16T15:36:24.811Z",
+        "name": "Manakara Atsimo",
+        "region": 9
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 69,
+    "fields": {
+        "public_id": "d665e154-885a-4681-89f4-8c6a3231f332",
+        "created": "2025-01-16T15:36:24.818Z",
+        "updated": "2025-01-16T15:36:24.818Z",
+        "name": "Ikongo (Fort_Carnot)",
+        "region": 9
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 70,
+    "fields": {
+        "public_id": "8fcd896b-296d-46d8-8cf5-e4bccb275af7",
+        "created": "2025-01-16T15:36:24.826Z",
+        "updated": "2025-01-16T15:36:24.826Z",
+        "name": "Vohipeno",
+        "region": 9
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 71,
+    "fields": {
+        "public_id": "a7c57485-86f0-45a2-b2dd-2c249a9361de",
+        "created": "2025-01-16T15:36:24.834Z",
+        "updated": "2025-01-16T15:36:24.834Z",
+        "name": "Fianarantsoa I",
+        "region": 10
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 72,
+    "fields": {
+        "public_id": "c81f0b25-9327-4100-9ca7-d31b1a2ebd50",
+        "created": "2025-01-16T15:36:24.841Z",
+        "updated": "2025-01-16T15:36:24.841Z",
+        "name": "Ambohimahasoa",
+        "region": 10
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 73,
+    "fields": {
+        "public_id": "4d685df0-f654-483b-a321-31dcfbc9eeb3",
+        "created": "2025-01-16T15:36:24.848Z",
+        "updated": "2025-01-16T15:36:24.848Z",
+        "name": "Ikalamavony",
+        "region": 10
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 74,
+    "fields": {
+        "public_id": "3e47cc6a-9fcc-4cf4-adac-af753f04484a",
+        "created": "2025-01-16T15:36:24.855Z",
+        "updated": "2025-01-16T15:36:24.855Z",
+        "name": "Isandra",
+        "region": 10
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 75,
+    "fields": {
+        "public_id": "e1b20ea7-ab74-45bb-ba80-a6bf48135c9a",
+        "created": "2025-01-16T15:36:24.862Z",
+        "updated": "2025-01-16T15:36:24.862Z",
+        "name": "Lalangina",
+        "region": 10
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 76,
+    "fields": {
+        "public_id": "95276ac2-fc3d-4e8d-9859-5d661c80c04f",
+        "created": "2025-01-16T15:36:24.868Z",
+        "updated": "2025-01-16T15:36:24.868Z",
+        "name": "Vohibato",
+        "region": 10
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 77,
+    "fields": {
+        "public_id": "bc0fcf63-5991-4742-b216-a7bf5e887b1c",
+        "created": "2025-01-16T15:36:24.876Z",
+        "updated": "2025-01-16T15:36:24.876Z",
+        "name": "Ambalavao",
+        "region": 10
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 78,
+    "fields": {
+        "public_id": "148b66ba-8481-4fa2-905f-30ad50b1566a",
+        "created": "2025-01-16T15:36:24.883Z",
+        "updated": "2025-01-16T15:36:24.883Z",
+        "name": "Ihosy",
+        "region": 11
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 79,
+    "fields": {
+        "public_id": "84ee2da0-751c-4e65-bbd1-a8659b081e2a",
+        "created": "2025-01-16T15:36:24.890Z",
+        "updated": "2025-01-16T15:36:24.890Z",
+        "name": "Ivohibe",
+        "region": 11
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 80,
+    "fields": {
+        "public_id": "31da53d6-6350-4bea-90bd-3a541b0a9abf",
+        "created": "2025-01-16T15:36:24.897Z",
+        "updated": "2025-01-16T15:36:24.897Z",
+        "name": "Iakora",
+        "region": 11
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 81,
+    "fields": {
+        "public_id": "3b0bcff7-38f1-40d0-87da-9d678cfa290e",
+        "created": "2025-01-16T15:36:24.905Z",
+        "updated": "2025-01-16T15:36:24.905Z",
+        "name": "Miarinarivo",
+        "region": 4
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 82,
+    "fields": {
+        "public_id": "87b2e02d-7c27-43cc-84c1-5bcebebe53e0",
+        "created": "2025-01-16T15:36:24.912Z",
+        "updated": "2025-01-16T15:36:24.912Z",
+        "name": "Arivonimamo",
+        "region": 4
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 83,
+    "fields": {
+        "public_id": "0a10e14f-59b9-4504-ad66-8782e4ae51b0",
+        "created": "2025-01-16T15:36:24.919Z",
+        "updated": "2025-01-16T15:36:24.919Z",
+        "name": "Soavinandriana",
+        "region": 4
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 84,
+    "fields": {
+        "public_id": "18b375ba-1ba2-4538-a36b-6d670018b939",
+        "created": "2025-01-16T15:36:24.927Z",
+        "updated": "2025-01-16T15:36:24.927Z",
+        "name": "Maintirano",
+        "region": 15
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 85,
+    "fields": {
+        "public_id": "ed1b258b-9b49-4927-84b7-70f02de2f876",
+        "created": "2025-01-16T15:36:24.934Z",
+        "updated": "2025-01-16T15:36:24.934Z",
+        "name": "Besalampy",
+        "region": 15
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 86,
+    "fields": {
+        "public_id": "218adb90-54e3-4999-8fe6-705953927d9a",
+        "created": "2025-01-16T15:36:24.941Z",
+        "updated": "2025-01-16T15:36:24.941Z",
+        "name": "Ambatomainty",
+        "region": 15
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 87,
+    "fields": {
+        "public_id": "9af6da1a-beeb-4f8d-a55e-823d2a132368",
+        "created": "2025-01-16T15:36:24.948Z",
+        "updated": "2025-01-16T15:36:24.948Z",
+        "name": "Morafenobe",
+        "region": 15
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 88,
+    "fields": {
+        "public_id": "97d14640-7d07-43cb-9a9f-8f71f325f3e4",
+        "created": "2025-01-16T15:36:24.956Z",
+        "updated": "2025-01-16T15:36:24.956Z",
+        "name": "Antsalova",
+        "region": 15
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 89,
+    "fields": {
+        "public_id": "4d45f216-93d9-44c0-9e6b-8a9f9582464c",
+        "created": "2025-01-16T15:36:24.964Z",
+        "updated": "2025-01-16T15:36:24.964Z",
+        "name": "Morondava",
+        "region": 24
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 90,
+    "fields": {
+        "public_id": "16f354ba-2458-40f6-9d56-a2faf9ef5faf",
+        "created": "2025-01-16T15:36:24.972Z",
+        "updated": "2025-01-16T15:36:24.973Z",
+        "name": "Miandrivazo",
+        "region": 24
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 91,
+    "fields": {
+        "public_id": "896afe18-6a32-48f7-a190-d0afae97cb03",
+        "created": "2025-01-16T15:36:24.985Z",
+        "updated": "2025-01-16T15:36:24.985Z",
+        "name": "Belo Sur Tsiribihina",
+        "region": 24
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 92,
+    "fields": {
+        "public_id": "c552e530-4a2c-48fd-b4e4-328119c13a49",
+        "created": "2025-01-16T15:36:24.990Z",
+        "updated": "2025-01-16T15:36:24.990Z",
+        "name": "Mahabo",
+        "region": 24
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 93,
+    "fields": {
+        "public_id": "1c7f75a2-d006-4a40-b780-2151cfeb7cbe",
+        "created": "2025-01-16T15:36:24.995Z",
+        "updated": "2025-01-16T15:36:24.995Z",
+        "name": "Manja",
+        "region": 24
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 94,
+    "fields": {
+        "public_id": "42380aa8-94df-41a2-ac86-1f2748276379",
+        "created": "2025-01-16T15:36:25.000Z",
+        "updated": "2025-01-16T15:36:25.000Z",
+        "name": "Sambava",
+        "region": 6
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 95,
+    "fields": {
+        "public_id": "692ba324-7d0e-445f-bf8b-dce88c0c29df",
+        "created": "2025-01-16T15:36:25.004Z",
+        "updated": "2025-01-16T15:36:25.004Z",
+        "name": "Vohimarina (Vohémar)",
+        "region": 6
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 96,
+    "fields": {
+        "public_id": "8a65ac08-9b45-48ee-a86b-fcf4e3e41391",
+        "created": "2025-01-16T15:36:25.009Z",
+        "updated": "2025-01-16T15:36:25.009Z",
+        "name": "Andapa",
+        "region": 6
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 97,
+    "fields": {
+        "public_id": "259d9db6-c8e2-4109-93fb-c840bdb649d8",
+        "created": "2025-01-16T15:36:25.016Z",
+        "updated": "2025-01-16T15:36:25.016Z",
+        "name": "Antalaha",
+        "region": 6
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 98,
+    "fields": {
+        "public_id": "393a7a9f-b0dc-44f9-81a2-84f1a143f111",
+        "created": "2025-01-16T15:36:25.022Z",
+        "updated": "2025-01-16T15:36:25.022Z",
+        "name": "Antsohihy",
+        "region": 16
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 99,
+    "fields": {
+        "public_id": "d32564e4-00e3-48f5-887d-ee34adf949ac",
+        "created": "2025-01-16T15:36:25.027Z",
+        "updated": "2025-01-16T15:36:25.027Z",
+        "name": "Analalava",
+        "region": 16
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 100,
+    "fields": {
+        "public_id": "0a5afdb9-52ce-4cdb-9326-0b2e2ce08e45",
+        "created": "2025-01-16T15:36:25.032Z",
+        "updated": "2025-01-16T15:36:25.032Z",
+        "name": "Bealanana",
+        "region": 16
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 101,
+    "fields": {
+        "public_id": "6929ba84-ef5c-4575-835d-c39118325a92",
+        "created": "2025-01-16T15:36:25.037Z",
+        "updated": "2025-01-16T15:36:25.037Z",
+        "name": "Befandriana Avaratra",
+        "region": 16
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 102,
+    "fields": {
+        "public_id": "06fe5598-2290-46d8-a2e8-35f8bb60e427",
+        "created": "2025-01-16T15:36:25.042Z",
+        "updated": "2025-01-16T15:36:25.042Z",
+        "name": "Boriziny (Port Berge)",
+        "region": 16
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 103,
+    "fields": {
+        "public_id": "04f5b1f0-23d2-4dd7-acc6-cb53ae5b6307",
+        "created": "2025-01-16T15:36:25.048Z",
+        "updated": "2025-01-16T15:36:25.048Z",
+        "name": "Mandritsara",
+        "region": 16
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 104,
+    "fields": {
+        "public_id": "b42a54ef-c891-4b17-a43c-6dc4c83c2903",
+        "created": "2025-01-16T15:36:25.053Z",
+        "updated": "2025-01-16T15:36:25.053Z",
+        "name": "Mampikony",
+        "region": 16
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 105,
+    "fields": {
+        "public_id": "13c1c66e-7410-4d3c-af64-efffdf8f3056",
+        "created": "2025-01-16T15:36:25.059Z",
+        "updated": "2025-01-16T15:36:25.059Z",
+        "name": "Antsirabe I",
+        "region": 2
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 106,
+    "fields": {
+        "public_id": "379f9928-cf94-4e63-89ab-d88d6037cf51",
+        "created": "2025-01-16T15:36:25.063Z",
+        "updated": "2025-01-16T15:36:25.063Z",
+        "name": "Ambatolampy",
+        "region": 2
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 107,
+    "fields": {
+        "public_id": "8e6c8670-69a0-485e-b053-ddde36af50c3",
+        "created": "2025-01-16T15:36:25.068Z",
+        "updated": "2025-01-16T15:36:25.068Z",
+        "name": "Faratsiho",
+        "region": 2
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 108,
+    "fields": {
+        "public_id": "d10123d5-c9cf-4c2d-a81a-bd9d74c45569",
+        "created": "2025-01-16T15:36:25.074Z",
+        "updated": "2025-01-16T15:36:25.074Z",
+        "name": "Mandoto",
+        "region": 2
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 109,
+    "fields": {
+        "public_id": "bce66e6f-041d-4068-8176-6d6c581018d6",
+        "created": "2025-01-16T15:36:25.078Z",
+        "updated": "2025-01-16T15:36:25.078Z",
+        "name": "Antanifotsy",
+        "region": 2
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 110,
+    "fields": {
+        "public_id": "087046ef-9ac6-4ade-a89a-4e08267f5b56",
+        "created": "2025-01-16T15:36:25.084Z",
+        "updated": "2025-01-16T15:36:25.084Z",
+        "name": "Betafo",
+        "region": 2
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 111,
+    "fields": {
+        "public_id": "b1cbed21-3a6f-4219-8e21-a4505c324267",
+        "created": "2025-01-16T15:36:25.092Z",
+        "updated": "2025-01-16T15:36:25.092Z",
+        "name": "Antsirabe II",
+        "region": 2
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 112,
+    "fields": {
+        "public_id": "807803ab-631d-4003-bfcf-6c6566e0a5e8",
+        "created": "2025-01-16T15:36:25.100Z",
+        "updated": "2025-01-16T15:36:25.100Z",
+        "name": "Nosy Varika",
+        "region": 12
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 113,
+    "fields": {
+        "public_id": "6dd29de4-98bc-418c-8a40-d86761418df1",
+        "created": "2025-01-16T15:36:25.108Z",
+        "updated": "2025-01-16T15:36:25.108Z",
+        "name": "Mananjary",
+        "region": 12
+    }
+},
+{
+    "model": "mada.district",
+    "pk": 114,
+    "fields": {
+        "public_id": "8e04cf97-ec04-4948-a744-3602b2bee25f",
+        "created": "2025-01-16T15:36:25.116Z",
+        "updated": "2025-01-16T15:36:25.116Z",
+        "name": "Ifanadiana",
+        "region": 12
+    }
+}
+]
