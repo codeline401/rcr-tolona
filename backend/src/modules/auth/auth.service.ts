@@ -191,7 +191,7 @@ export const forgotPassword = async (email: string): Promise<string> => {
     where: { id: user.id },
     data: {
       resetPasswordToken: hashedToken,
-      resetPasswordExpires: resetTokenExpiry,
+      resetPasswordExpiry: resetTokenExpiry,
     },
   });
 
@@ -215,7 +215,7 @@ export const resetPassword = async (
   const user = await prisma.user.findFirst({
     where: {
       resetPasswordToken: hashedToken,
-      resetPasswordExpires: { gt: new Date() }, // Vérifie que le token n'est pas expiré
+      resetPasswordExpiry: { gt: new Date() }, // Vérifie que le token n'est pas expiré
     },
   });
 
@@ -232,7 +232,7 @@ export const resetPassword = async (
     data: {
       password: hashedPassword,
       resetPasswordToken: null, // Invalider le token de reset après utilisation
-      resetPasswordExpires: null,
+      resetPasswordExpiry: null,
     },
   });
 };

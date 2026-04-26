@@ -6,7 +6,6 @@ import { validationResult } from "express-validator";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { success, error } from "../../utils/response";
 import * as membreService from "./membre.service";
-import { cp } from "node:fs";
 
 // -----------------------------------------------------------------------
 // GET /api/membres - liste paginée avec filtre
@@ -19,9 +18,9 @@ export const getMembres = async (req: Request, res: Response) => {
   try {
     const result = await membreService.getMembres({
       page: Number(req.query.page) || 1,
-      limit: Number(req.query.limit) || 10,
+      limit: Number(req.query.limit) || 20,
       search: req.query.search as string,
-      statut: Number(req.query.statut),
+      statut: req.query.statut as string,
       validityStatus: req.query.validityStatus
         ? Number(req.query.validityStatus)
         : undefined,
@@ -35,7 +34,7 @@ export const getMembres = async (req: Request, res: Response) => {
     });
     return success(res, result);
   } catch (err: any) {
-    return error(res, err.message, 404);
+    return error(res, err.message, 500);
   }
 };
 
@@ -66,11 +65,11 @@ export const createMembre = async (req: AuthRequest, res: Response) => {
       ? `/uploads/membres/${req.file.filename}`
       : undefined;
 
-    const membre = await membreService.createMembre({
-      data: req.body,
-      photo: pathPhoto,
-      createdBy: req.user?.id,
-    });
+    const membre = await membreService.createMembre(
+      req.body,
+      pathPhoto,
+      req.user?.id,
+    );
     return success(res, membre, "Membre créé avec succès", 201);
   } catch (err: any) {
     return error(res, err.message, 500);
@@ -131,6 +130,8 @@ export const updateValidityStatus = async (req: AuthRequest, res: Response) => {
     );
     return success(res, membre, "Statut de validité mis à jour avec succès");
   } catch (err: any) {
+    if (err.message === "Membre non trouvé.")
+      return error(res, err.message, 404);
     return error(res, err.message, 500);
   }
 };
@@ -139,14 +140,17 @@ export const updateValidityStatus = async (req: AuthRequest, res: Response) => {
 // PATCH /api/membre/:id/exclude - exclure
 // -----------------------------------------------------------------------
 export const excludeMembre = async (req: AuthRequest, res: Response) => {
+  if (!req.user) return error(res, "Non autorisé", 401);
   try {
     const membre = await membreService.exclureMembre(
       req.params.id as string,
-      req.user!.id as string,
-      req.body.raison || "Aucune raison fournie",
+      req.user.id as string,
+      req.body.raison,
     );
     return success(res, membre, "Membre exclu avec succès");
   } catch (err: any) {
+    if (err.message === "Membre non trouvé.")
+      return error(res, err.message, 404);
     return error(res, err.message, 500);
   }
 };

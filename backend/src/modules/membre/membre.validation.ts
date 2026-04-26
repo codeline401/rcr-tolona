@@ -3,11 +3,14 @@
 
 import { body, query } from "express-validator";
 
+const currentYear = new Date().getFullYear();
+
 // ----------------------------------------------------------------------------
-// Règles communes : utilisées à la création ET à la modification
-// (on le réutilise dans les deux routes pour éviter les doublons)
+// Règles communes : retourne de nouvelles instances à chaque appel
+// pour éviter la mutation des chaînes partagées entre createMemberValidation
+// et updateMemberValidation
 // ----------------------------------------------------------------------------
-const communRules = [
+const buildCommunRules = () => [
   body("nom")
     .trim()
     .notEmpty()
@@ -51,13 +54,13 @@ const communRules = [
     .normalizeEmail(),
 
   body("anneeDecouverte")
-    .trim()
     .notEmpty()
     .withMessage("L'année de découverte est requise.")
-    .isInt({ min: 2011, max: new Date().getFullYear() })
+    .isInt({ min: 2011, max: currentYear })
     .withMessage(
-      `L'année de découverte doit être un entier entre 2011 et ${new Date().getFullYear()}.`,
-    ),
+      `L'année de découverte doit être un entier entre 2011 et ${currentYear}.`,
+    )
+    .toInt(),
 
   body("canalDecouverte")
     .trim()
@@ -86,13 +89,13 @@ const communRules = [
 // ----------------------------------------------------------------------------
 // Création d'un membre : toutes les règles obligatoires
 // ----------------------------------------------------------------------------
-export const createMemberValidation = [...communRules];
+export const createMemberValidation = [...buildCommunRules()];
 
 // ----------------------------------------------------------------------------
 // Mise à jour d'un membre : tous les champs sont optionnels (PATCH)
 // On marque chaque règle comme optionnel
 // ----------------------------------------------------------------------------
-export const updateMemberValidation = communRules.map((rule) =>
+export const updateMemberValidation = buildCommunRules().map((rule) =>
   rule.optional({ nullable: true }),
 );
 
@@ -102,9 +105,9 @@ export const updateMemberValidation = communRules.map((rule) =>
 // ----------------------------------------------------------------------------
 export const updateValidityValidation = [
   body("validityStatus")
-    .isIn([1, 2, 3])
+    .isIn([0, 1, 2, 3])
     .withMessage(
-      "Le statut de validité doit être 1 (approuvé), 2 (rejeté) ou 3 (en attente).",
+      "Le statut de validité doit être 0 (initial), 1 (en attente), 2 (validé) ou 3 (rejeté).",
     ),
 
   body("comment")
@@ -130,7 +133,7 @@ export const listMemberValidation = [
     .withMessage("Limit Invalide")
     .toInt(),
 
-  query("status").optional().isIn(["actif", "passif"]),
+  query("statut").optional().isIn(["actif", "passif"]).withMessage("Le statut doit être 'actif' ou 'passif'."),
 
-  query("validityStatus").optional().isInt({ min: 1, max: 3 }).toInt(),
+  query("validityStatus").optional().isInt({ min: 0, max: 3 }).toInt().withMessage("Le statut de validité doit être un entier entre 0 et 3."),
 ];

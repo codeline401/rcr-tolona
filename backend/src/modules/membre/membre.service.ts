@@ -5,7 +5,6 @@
 import prisma from "../../config/prisma";
 import fs from "fs"; // pour gérer les fichiers (suppression de photos)
 import path from "path"; // pour gérer les chemins de fichiers
-import { stringify } from "querystring";
 
 // ---------------------------------------------------------------------------
 // ALGO GENERATION DU CODE ALPHANUMERIQUE (traduit depuis python)
@@ -19,7 +18,7 @@ import { stringify } from "querystring";
 // ---------------------------------------------------------------------------
 const ALPHABET = "ABCDEFGHIJKLMNPQRSTUVWXYZ"; // pas de O pour éviter les confusions avec le 0
 
-const generateDivisonCode = (num: number): string => {
+const generateDivisionCode = (num: number): string => {
   if (num < 1 || num >= 1200) {
     throw new Error(
       `Division number must be between 1 and 1199. Received: ${num}`,
@@ -72,7 +71,7 @@ const generateRegistrationNumber = async (
   });
 
   const divisionNumber = count + 1; // le prochain numéro de division à attribuer
-  const codeDivision = generateDivisonCode(divisionNumber); // générer le code de division à partir du numéro de division
+  const codeDivision = generateDivisionCode(divisionNumber); // générer le code de division à partir du numéro de division
   const registrationNumber = `${codeRegion}${codeDistrict}${codeDivision}`; // construire le matricule complet
 
   return { registrationNumber, divisionNumber, codeDivision };
@@ -85,7 +84,7 @@ export const getMembres = async (params: {
   page?: number;
   limit?: number;
   search?: string;
-  statut?: number;
+  statut?: string;
   validityStatus?: number;
   districtId?: string;
   isExcluded?: boolean;
@@ -253,6 +252,7 @@ export const createMembre = async (
       statut: "actif", // par défaut un nouveau membre est actif
       photo: photo || null,
       validityStatus: 0, // 0 = en attente de validation
+      hasUser: !!data.utilisateurId,
       createdById: createdById || null,
     },
   });
@@ -282,22 +282,6 @@ export const updateMembre = async (
     if (existingCin) throw new Error("CIN déjà utilisé par un autre membre.");
   }
 
-  // Si une nouvelle photo est fournie, supprimer l'ancienne
-  if (newPhoto && membre.photo) {
-    const oldPhotoPath = path.join(
-      __dirname,
-      "..",
-      "..",
-      "..",
-      "uploads",
-      "membres",
-      path.basename(membre.photo),
-    );
-    if (fs.existsSync(oldPhotoPath)) {
-      fs.unlinkSync(oldPhotoPath); // supprimer l'ancienne photo du serveur
-    }
-  }
-
   // Construire l'objet de mise à jour (seulement les champs fournis)
   const updateData: any = {};
   const fields = [
@@ -325,6 +309,7 @@ export const updateMembre = async (
     "partageContacts",
     "statut",
     "canVote",
+    "utilisateurId",
   ];
 
   for (const field of fields) {
@@ -335,9 +320,37 @@ export const updateMembre = async (
   }
 
   if (data.nom) updateData.nom = data.nom.toUpperCase();
+  if (data.utilisateurId !== undefined)
+    updateData.hasUser = data.utilisateurId !== null;
   if (newPhoto) updateData.photo = newPhoto;
 
-  return prisma.membre.update({ where: { id }, data: updateData });
+  const oldPhotoPath =
+    newPhoto && membre.photo
+      ? path.join(
+          __dirname,
+          "..",
+          "..",
+          "..",
+          "uploads",
+          "membres",
+          path.basename(membre.photo),
+        )
+      : null;
+
+  const updated = await prisma.membre.update({
+    where: { id },
+    data: updateData,
+  });
+
+  // Supprimer l'ancienne photo après la mise à jour réussie
+  if (oldPhotoPath) {
+    fs.promises.unlink(oldPhotoPath).catch((err) => {
+      if (err.code !== "ENOENT")
+        console.error("Failed to delete old photo:", err);
+    });
+  }
+
+  return updated;
 };
 
 // ---------------------------------------------------------------------------
@@ -360,9 +373,10 @@ export const deleteMembre = async (id: string) => {
       "membres",
       path.basename(membre.photo),
     );
-    if (fs.existsSync(photoPath)) {
-      fs.unlinkSync(photoPath); // supprimer la photo du serveur
-    }
+    fs.promises.unlink(photoPath).catch((err) => {
+      if (err.code !== "ENOENT")
+        console.error("Failed to delete member photo:", err);
+    });
   }
 
   await prisma.membre.delete({
@@ -390,26 +404,30 @@ export const updateValidityStatus = async (
   history.push({
     status: validityStatus,
     comment,
-    date: new Date().toDateString(),
+    date: new Date().toISOString(),
     treatedById: treatedById,
   });
 
   // Si approuvée (status 2) et pas encore de matricule, générer le matricule
   let matriculeData = {};
-  if (
-    validityStatus === 2 &&
-    !membre.registrationNumber &&
-    membre.codeRegion &&
-    membre.codeDistrict
-  ) {
-    const { registrationNumber, divisionNumber, codeDivision } =
-      await generateRegistrationNumber(membre.codeRegion, membre.codeDistrict);
-    matriculeData = {
-      registrationNumber,
-      codeDivision,
-      divisionNumber,
-      dateRegistration: new Date(),
-    };
+  if (validityStatus === 2 && !membre.registrationNumber) {
+    if (membre.codeRegion && membre.codeDistrict) {
+      const { registrationNumber, divisionNumber, codeDivision } =
+        await generateRegistrationNumber(
+          membre.codeRegion,
+          membre.codeDistrict,
+        );
+      matriculeData = {
+        registrationNumber,
+        codeDivision,
+        divisionNumber,
+        dateRegistration: new Date(),
+      };
+    } else {
+      console.warn(
+        `Membre ${id}: codeRegion ou codeDistrict manquant, matricule non généré.`,
+      );
+    }
   }
 
   return prisma.membre.update({

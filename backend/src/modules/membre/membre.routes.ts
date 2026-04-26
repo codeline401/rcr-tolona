@@ -5,15 +5,34 @@
 
 import { Router } from "express";
 import { authenticate, isStaff } from "../../middlewares/auth.middleware";
-import { uploadMmeber } from "../../middlewares/upload.middleware";
+import { uploadMember } from "../../middlewares/upload.middleware";
 import * as membreController from "./membre.controller";
 import {
   createMemberValidation,
   listMemberValidation,
   updateMemberValidation,
+  updateValidityValidation,
 } from "./membre.validation";
+import { body, validationResult } from "express-validator";
+import { Request, Response, NextFunction } from "express";
 
 const router = Router(); // Création du routeur Express
+
+// Validation de la raison d'exclusion
+const excludeValidation = [
+  body("raison")
+    .trim()
+    .notEmpty()
+    .withMessage("La raison d'exclusion est requise.")
+    .isLength({ min: 3, max: 500 })
+    .withMessage("La raison doit comporter entre 3 et 500 caractères."),
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).json({ errors: errors.array() });
+    return next();
+  },
+];
 
 // Toutes les routes nécessitent d'être connecté
 router.use(authenticate);
@@ -29,31 +48,36 @@ router.get("/", listMemberValidation, membreController.getMembres);
 router.post(
   "/",
   isStaff,
-  uploadMmeber,
+  uploadMember,
   createMemberValidation,
   membreController.createMembre,
 );
 
 // --- Actions spéciales sur un membre (avant /:id pour éviter tous conflits) ---
 // PATCH /api/membres/:id/validity  -> valider / rejeter
-// PATCH /api/membre/:id/exclude    -> exclure
+// PATCH /api/membres/:id/exclude   -> exclure
 router.patch(
   "/:id/validity",
   isStaff,
-  updateMemberValidation,
+  updateValidityValidation,
   membreController.updateValidityStatus,
 );
-router.patch("/:id/exclude", isStaff, membreController.excludeMembre);
+router.patch(
+  "/:id/exclude",
+  isStaff,
+  excludeValidation,
+  membreController.excludeMembre,
+);
 
 // --- CRUD standard ---
 // GET /api/membres/:id       -> fiche détaillée
-// PATCH /pai/membres/:id     -> modifier un membre (avec photo optionnelle)
+// PATCH /api/membres/:id     -> modifier un membre (avec photo optionnelle)
 // DELETE /api/membres/:id    -> supprimer un membre
 router.get("/:id", membreController.getMembreById);
 router.patch(
   "/:id",
   isStaff,
-  uploadMmeber,
+  uploadMember,
   updateMemberValidation,
   membreController.updateMembre,
 );

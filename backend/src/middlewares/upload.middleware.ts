@@ -7,7 +7,7 @@ import path from "path";
 import fs from "fs";
 import { Request } from "express";
 
-// Taille maxiamale autorisée pour les fichiers uploadés (5MB)
+// Taille maximale autorisée pour les fichiers uploadés (5MB)
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 // Extension d'image autorisées
@@ -61,7 +61,7 @@ const fileFilter = (
 // ---------------------------------------------------------------------------
 // Instance Multer pour les photos membres
 // ---------------------------------------------------------------------------
-export const uploadMmeber = multer({
+export const uploadMember = multer({
   storage,
   limits: { fileSize: MAX_FILE_SIZE },
   fileFilter,

@@ -201,7 +201,7 @@ model Membre {
   // --- Relations utilisateur ---
   utilisateur   User?   @relation(fields: [utilisateurId], references: [id])
   utilisateurId String? @unique
-  hasUser       Boolean @default(true)
+  hasUser       Boolean @default(false)
 
   createdBy   User?   @relation("CreatedBy", fields: [createdById], references: [id])
   createdById String?
