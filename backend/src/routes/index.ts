@@ -9,7 +9,7 @@ import { Router } from "express";
 
 import authRoutes from "../modules/auth/auth.routes";
 import madaRoutes from "../modules/mada/mada.routes";
-// import membreRoutes    from '../modules/membre/membre.routes';
+import membreRoutes from "../modules/membre/membre.routes";
 // import cotisRoutes     from '../modules/cotisation/cotisation.routes';
 // import financeRoutes   from '../modules/finance/finance.routes';
 // import blogRoutes      from '../modules/blog/blog.routes';
@@ -20,7 +20,7 @@ const router = Router();
 
 router.use("/auth", authRoutes);
 router.use("/mada", madaRoutes);
-// router.use('/membres',     membreRoutes);
+router.use("/membres", membreRoutes);
 // router.use('/cotisations', cotisRoutes);
 // router.use('/finance',     financeRoutes);
 // router.use('/blog',        blogRoutes);
