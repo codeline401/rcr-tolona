@@ -91,23 +91,22 @@ model Adresse {
 model User {
   id          String    @id @default(uuid())
   email       String    @unique
-  password    String // mot de passe hashé avec bcrypt (JAMAIS en clair)
+  password    String
   isActive    Boolean   @default(true)
-  isStaff     Boolean   @default(false) // accès admin
-  isSuperuser Boolean   @default(false) // accès total
+  isStaff     Boolean   @default(false)
+  isSuperuser Boolean   @default(false)
   lastLogin   DateTime?
 
-  // Réinitialisation du mot de passe
-  resetPasswordToken   String?
-  resetPasswordExpires DateTime?
+  resetPasswordToken  String?
+  resetPasswordExpiry DateTime?
 
   // Relations
-  membre    Membre? // un User peut être lié à un Membre
-  blogPosts Post[] // articles rédigés par cet utilisateur
-  votes     Vote[] // votes effectués
-
-  // Les membres créés par cet utilisateur
-  membresCreated Membre[] @relation("CreatedBy")
+  membre          Membre? // un User peut être lié à un Membre
+  blogPosts       Post[]
+  votes           Vote[]
+  membresCreated  Membre[] @relation("CreatedBy")
+  membresTreated  Membre[] @relation("TreatedBy")
+  membresExcluded Membre[] @relation("ExcludedBy")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -137,24 +136,24 @@ model Membre {
   prenom        String?
   sexe          String // "M" = Masculin, "F" = Féminin
   dateNaissance DateTime
-  cin           String   @unique // Carte d'identité nationale
+  cin           String   @unique
   passeport     String?
 
-  // Adresse & nationalité
+  // Nationalité & adresse
   nationalite     Pays?    @relation(fields: [nationaliteId], references: [id])
   nationaliteId   String?
   adresse         Adresse? @relation(fields: [adresseId], references: [id])
   adresseId       String?
-  adresseEtranger String? // si le membre est à l'étranger
+  adresseEtranger String?
 
   // Contacts
   telephone String
   email     String?
 
   // --- Parcours RCR ---
-  formationRcr    Boolean @default(false) // a suivi une formation RCR ?
-  anneeDecouverte String // année où il a découvert le mouvement
-  canalDecouverte String // comment il a découvert (réseaux sociaux, ami...)
+  formationRcr    Boolean @default(false)
+  anneeDecouverte String
+  canalDecouverte String
   motivation      String
   attentes        String?
 
@@ -166,31 +165,50 @@ model Membre {
 
   // --- Consentement & statut ---
   membreActif     Boolean @default(true)
-  partageContacts Boolean @default(false) // accepte de partager ses contacts
+  partageContacts Boolean @default(false)
   statut          String  @default("actif") // "actif" | "passif"
   canVote         Boolean @default(false)
 
-  // Photo de profil
-  photo String? // chemin vers l'image
+  // Photo de profil (chemin relatif vers le fichier uploadé)
+  photo String?
 
-  // --- Matricule (système de codification interne) ---
-  codeRegion           String?
-  codeDistrict         String?
-  codeDivision         String?
-  divisionNumber       Int?
-  divisionAlphanumeric String?
-  registrationNumber   String? @unique // numéro de matricule final
+  // --- Matricule ---
+  codeRegion                     String?
+  codeDistrict                   String?
+  codeDivision                   String? // généré par l'algo alphanumeric
+  divisionNumber                 Int? // numéro brut avant conversion
+  divisionAlphanumeric           String?
+  registrationNumber             String?   @unique // matricule final ex: "A1B2C3"
+  isRegistrationNumberDefinitive Boolean   @default(false)
+  oldRegistrationNumber          String?
+  dateRegistrationNumber         DateTime?
 
-  // --- Relations ---
+  // --- Statut de validité ---
+  // 1 = En attente, 2 = Approuvé, 3 = Rejeté
+  validityStatus         Int       @default(1)
+  treatedBy              User?     @relation("TreatedBy", fields: [treatedById], references: [id])
+  treatedById            String?
+  treatedAt              DateTime?
+  validityLastComment    String    @default("")
+  validityHistoryComment Json      @default("[]") // tableau de commentaires historiques
+
+  // --- Exclusion ---
+  isExcluded   Boolean   @default(false)
+  excludedBy   User?     @relation("ExcludedBy", fields: [excludedById], references: [id])
+  excludedById String?
+  excludedAt   DateTime?
+
+  // --- Relations utilisateur ---
   utilisateur   User?   @relation(fields: [utilisateurId], references: [id])
-  utilisateurId String? @unique // un User = un seul Membre
+  utilisateurId String? @unique
   hasUser       Boolean @default(true)
 
   createdBy   User?   @relation("CreatedBy", fields: [createdById], references: [id])
   createdById String?
 
-  cotisations        Cotisation[] // cotisations de ce membre
-  caisseIndividuelle CompteFinancier? // caisse personnelle (pour collecteurs)
+  // --- Autres relations ---
+  cotisations        Cotisation[]
+  caisseIndividuelle CompteFinancier?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
