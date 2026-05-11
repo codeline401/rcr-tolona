@@ -22,7 +22,7 @@ export const getComptes = async (req: Request, res: Response) => {
 
 export const getCompteById = async (req: Request, res: Response) => {
   try {
-    const data = await financeService.getCompteById(req.params.id);
+    const data = await financeService.getCompteById(req.params.id as string);
     return success(res, data);
   } catch (err: any) {
     return error(res, err.message, 404);
@@ -44,7 +44,10 @@ export const createCompte = async (req: Request, res: Response) => {
 
 export const updateCompte = async (req: Request, res: Response) => {
   try {
-    const data = await financeService.updateCompte(req.params.id, req.body);
+    const data = await financeService.updateCompte(
+      req.params.id as string,
+      req.body,
+    );
     return success(res, data, "Compte mis à jour");
   } catch (err: any) {
     return error(res, err.message, 400);
@@ -94,7 +97,7 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
 export const annulerTransaction = async (req: AuthRequest, res: Response) => {
   try {
     const data = await financeService.annulerTransaction(
-      req.params.id,
+      req.params.id as string,
       req.user!.id,
     );
     return success(res, data, "Transaction annulée par contrepassation");
@@ -111,7 +114,7 @@ export const calculerRepartition = async (req: Request, res: Response) => {
   try {
     // paiementId passé dans l'URL
     const data = await financeService.calculerRepartition(
-      req.params.paiementId,
+      req.params.paiementId as string,
     );
     return success(res, data, "Répartition calculée");
   } catch (err: any) {
@@ -128,7 +131,9 @@ export const getWallet = async (req: AuthRequest, res: Response) => {
     // Un utilisateur peut voir son propre wallet
     // Un staff peut voir celui de n'importe quel utilisateur
     const utilisateurId = req.params.userId || req.user!.id;
-    const data = await financeService.getOrCreateWallet(utilisateurId);
+    const data = await financeService.getOrCreateWallet(
+      utilisateurId as string,
+    );
     return success(res, data);
   } catch (err: any) {
     return error(res, err.message);
