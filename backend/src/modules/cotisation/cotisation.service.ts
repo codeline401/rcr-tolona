@@ -140,12 +140,8 @@ export const getCotisations = async (params: {
   // (calculé côté service après fetch car Prisma ne supporte pas
   // facilement les agrégats dans where)
 
-  const [total, cotisations] = await Promise.all([
-    prisma.cotisation.count({ where }),
-    prisma.cotisation.findMany({
-      where,
-      skip,
-      take: limit,
+  const cotisations = await prisma.cotisation.findMany({
+    where,
       include: {
         membre: {
           select: {
@@ -164,9 +160,8 @@ export const getCotisations = async (params: {
         },
         _count: { select: { tranches: true, paiements: true } },
       },
-      orderBy: { createdAt: "desc" },
-    }),
-  ]);
+    orderBy: { createdAt: "desc" },
+  });
 
   // Calculer le montant payé et le statut pour chaque cotisation
   const cotisationsAvecStatut = cotisations.map((c) => {
@@ -191,8 +186,9 @@ export const getCotisations = async (params: {
       ? cotisationsAvecStatut.filter((c) => c.estPayee === params.payee)
       : cotisationsAvecStatut;
 
+  const total = filtered.length;
   return {
-    data: filtered,
+    data: filtered.slice(skip, skip + limit),
     pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
   };
 };
@@ -298,23 +294,22 @@ export const createCotisation = async (
 
     // 2. Générer les tranches automatiquement
     const nbTranches = type.nombreTranche;
-    const montantParTranche = Number(montantTotal) / nbTranches;
 
-    // Mois d'échéance : répartis sur l'année (3, 6, 9, 12)
-    const moisEcheance = [3, 6, 9, 12];
+    // Répartition en centimes pour éviter la dérive des arrondis flottants
+    const totalCents = Math.round(Number(montantTotal) * 100);
+    const baseCents = Math.floor(totalCents / nbTranches);
+    const remainder = totalCents % nbTranches;
 
+    // Distribution des mois sur l'année complète (jusqu'à 12 tranches distinctes)
     const tranches = Array.from({ length: nbTranches }, (_, i) => {
-      const moisIndex = i % moisEcheance.length;
-      const dateEcheance = new Date(
-        campagne.annee,
-        moisEcheance[moisIndex] - 1,
-        30,
-      );
+      const month = Math.floor((i * 12) / nbTranches) + 1;
+      const dateEcheance = new Date(campagne.annee, month - 1, 28);
+      const amountCents = baseCents + (i < remainder ? 1 : 0);
 
       return {
         cotisationId: cotisation.id,
         numero: i + 1,
-        montant: new Decimal(montantParTranche.toFixed(2)),
+        montant: new Decimal((amountCents / 100).toFixed(2)),
         dateEcheance,
         payee: false,
       };
@@ -358,41 +353,41 @@ export const createPaiement = async (
   },
   enregistreParId: string,
 ) => {
-  const cotisation = await prisma.cotisation.findUnique({
-    where: { id: cotisationId },
-    include: {
-      paiements: { where: { estValide: true }, select: { montant: true } },
-    },
-  });
-  if (!cotisation) throw new Error("Cotisation introuvable");
-
-  // Calculer le montant déjà payé
-  const dejasPaye = cotisation.paiements.reduce(
-    (sum, p) => sum + Number(p.montant),
-    0,
-  );
-  const resteAPayer = Number(cotisation.montantTotal) - dejasPaye;
-
-  // Vérifier que le paiement ne dépasse pas le reste à payer
-  if (data.montant > resteAPayer + 0.01) {
-    // +0.01 pour tolérer les erreurs d'arrondi
-    throw new Error(
-      `Montant trop élevé. Reste à payer : ${resteAPayer.toFixed(2)} Ar`,
-    );
-  }
-
-  // Si une tranche est spécifiée, vérifier qu'elle appartient à cette cotisation
-  if (data.trancheId) {
-    const tranche = await prisma.trancheCotisation.findUnique({
-      where: { id: data.trancheId },
-    });
-    if (!tranche || tranche.cotisationId !== cotisationId) {
-      throw new Error("Cette tranche ne correspond pas à cette cotisation");
-    }
-  }
-
-  // Tout faire dans une transaction : paiement + mise à jour tranche
+  // Tout faire dans une transaction : vérifications + paiement + mise à jour tranche
   return prisma.$transaction(async (tx) => {
+    // Re-fetch dans la transaction pour prévenir les races concurrentes
+    const cotisation = await tx.cotisation.findUnique({
+      where: { id: cotisationId },
+      include: {
+        paiements: { where: { estValide: true }, select: { montant: true } },
+      },
+    });
+    if (!cotisation) throw new Error("Cotisation introuvable");
+
+    // Calculer le montant déjà payé
+    const dejasPaye = cotisation.paiements.reduce(
+      (sum, p) => sum + Number(p.montant),
+      0,
+    );
+    const resteAPayer = Number(cotisation.montantTotal) - dejasPaye;
+
+    // Vérifier que le paiement ne dépasse pas le reste à payer
+    if (data.montant > resteAPayer + 0.01) {
+      throw new Error(
+        `Montant trop élevé. Reste à payer : ${resteAPayer.toFixed(2)} Ar`,
+      );
+    }
+
+    // Si une tranche est spécifiée, vérifier qu'elle appartient à cette cotisation
+    if (data.trancheId) {
+      const tranche = await tx.trancheCotisation.findUnique({
+        where: { id: data.trancheId },
+      });
+      if (!tranche || tranche.cotisationId !== cotisationId) {
+        throw new Error("Cette tranche ne correspond pas à cette cotisation");
+      }
+    }
+
     // 1. Créer le paiement
     const paiement = await tx.paiementCotisation.create({
       data: {
@@ -448,11 +443,19 @@ export const invaliderPaiement = async (paiementId: string) => {
       data: { estValide: false },
     });
 
-    // 2. Si la tranche était marquée payée, la remettre à faux
+    // 2. Recalculer le statut payée de la tranche selon les paiements valides restants
     if (paiement.trancheId) {
+      const tranche = await tx.trancheCotisation.findUnique({
+        where: { id: paiement.trancheId },
+      });
+      const sumRestant = await tx.paiementCotisation.aggregate({
+        where: { trancheId: paiement.trancheId, estValide: true },
+        _sum: { montant: true },
+      });
+      const totalRestant = Number(sumRestant._sum.montant || 0);
       await tx.trancheCotisation.update({
         where: { id: paiement.trancheId },
-        data: { payee: false },
+        data: { payee: totalRestant >= Number(tranche?.montant || 0) },
       });
     }
 

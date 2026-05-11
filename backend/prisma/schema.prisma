@@ -320,6 +320,8 @@ model PaiementCotisation {
   enregistrePar   User?   @relation("PaiementsEnregistres", fields: [enregistreParId], references: [id])
   enregistreParId String?
 
+  repartition RepartitionCotisation?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -394,7 +396,8 @@ model RepartitionCotisation {
   partNationale Decimal @db.Decimal(15, 2)
 
   // Référence au paiement source (unique = un paiement = une répartition)
-  paiementId String @unique
+  paiement   PaiementCotisation @relation(fields: [paiementId], references: [id])
+  paiementId String             @unique
 
   district   District? @relation(fields: [districtId], references: [id])
   districtId String?

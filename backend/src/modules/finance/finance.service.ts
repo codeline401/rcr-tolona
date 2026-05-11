@@ -83,7 +83,10 @@ export const updateCompte = async (
 ) => {
   const compte = await prisma.compteFinancier.findUnique({ where: { id } });
   if (!compte) throw new Error("Compte introuvable");
-  return prisma.compteFinancier.update({ where: { id }, data });
+  const updateData: { nom?: string; actif?: boolean } = {};
+  if (data.nom !== undefined) updateData.nom = data.nom;
+  if (data.actif !== undefined) updateData.actif = data.actif;
+  return prisma.compteFinancier.update({ where: { id }, data: updateData });
 };
 
 // ================================================================
@@ -150,24 +153,44 @@ export const createTransaction = async (
   if (!compte) throw new Error("Compte introuvable");
   if (!compte.actif) throw new Error("Ce compte est inactif");
 
-  // Vérifier qu'une SORTIE ne rend pas le solde négatif
-  if (data.type === "SORTIE") {
-    const soldeActuel = Number(compte.solde);
-    if (data.montant > soldeActuel) {
-      throw new Error(
-        `Solde insuffisant. Solde actuel : ${soldeActuel.toFixed(2)} Ar`,
-      );
-    }
-  }
-
   // Générer une référence unique si non fournie
   const reference =
     data.reference ||
     `TXN-${Date.now()}-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
 
-  // Tout en transaction Prisma : créer la ligne + mettre à jour le solde
+  // Tout en transaction Prisma : créer la ligne + mettre à jour le solde atomiquement
   return prisma.$transaction(async (tx) => {
-    // 1. Créer la transaction
+    if (data.type === "SORTIE") {
+      // Décrémentation conditionnelle atomique : évite la race sur le solde
+      const updated = await tx.compteFinancier.updateMany({
+        where: { id: data.compteId, solde: { gte: new Decimal(data.montant) } },
+        data: { solde: { decrement: new Decimal(data.montant) } },
+      });
+      if (updated.count === 0) {
+        const c = await tx.compteFinancier.findUnique({
+          where: { id: data.compteId },
+        });
+        throw new Error(
+          `Solde insuffisant. Solde actuel : ${Number(c?.solde || 0).toFixed(2)} Ar`,
+        );
+      }
+      return tx.transactionFinanciere.create({
+        data: {
+          type: data.type,
+          source: data.source,
+          montant: new Decimal(data.montant),
+          reference,
+          description: data.description || null,
+          compteId: data.compteId,
+          createdById,
+          cotisationId: data.cotisationId || null,
+          paiementCotisationId: data.paiementCotisationId || null,
+          annule: false,
+        },
+      });
+    }
+
+    // ENTREE : créer d'abord la transaction, puis incrémenter le solde
     const transaction = await tx.transactionFinanciere.create({
       data: {
         type: data.type,
@@ -183,15 +206,9 @@ export const createTransaction = async (
       },
     });
 
-    // 2. Mettre à jour le solde du compte
-    const delta =
-      data.type === "ENTREE"
-        ? new Decimal(data.montant)
-        : new Decimal(-data.montant);
-
     await tx.compteFinancier.update({
       where: { id: data.compteId },
-      data: { solde: { increment: delta } },
+      data: { solde: { increment: new Decimal(data.montant) } },
     });
 
     return transaction;
@@ -201,21 +218,25 @@ export const createTransaction = async (
 // Annuler une transaction par contrepassation
 // (crée une transaction inverse pour annuler l'effet comptable)
 export const annulerTransaction = async (id: string, createdById: string) => {
-  const transaction = await prisma.transactionFinanciere.findUnique({
-    where: { id },
-    include: { compte: true },
-  });
-  if (!transaction) throw new Error("Transaction introuvable");
-  if (transaction.annule) throw new Error("Transaction déjà annulée");
-
   return prisma.$transaction(async (tx) => {
-    // 1. Marquer la transaction originale comme annulée
-    await tx.transactionFinanciere.update({
-      where: { id },
+    // Marquer comme annulée atomiquement — évite les doubles annulations concurrentes
+    const updated = await tx.transactionFinanciere.updateMany({
+      where: { id, annule: false },
       data: { annule: true },
     });
+    if (updated.count === 0) {
+      const existing = await tx.transactionFinanciere.findUnique({
+        where: { id },
+      });
+      if (!existing) throw new Error("Transaction introuvable");
+      throw new Error("Transaction déjà annulée");
+    }
 
-    // 2. Créer la contrepassation (transaction inverse)
+    // Recharger pour récupérer les détails
+    const transaction = await tx.transactionFinanciere.findUniqueOrThrow({
+      where: { id },
+    });
+
     const typeInverse = transaction.type === "ENTREE" ? "SORTIE" : "ENTREE";
     const refContrepassation = `ANNUL-${transaction.reference}`;
 
@@ -233,11 +254,11 @@ export const annulerTransaction = async (id: string, createdById: string) => {
       },
     });
 
-    // 3. Mettre à jour le solde (inverse de la transaction originale)
+    // Utiliser l'API Decimal pour éviter la perte de précision via Number()
     const delta =
       typeInverse === "ENTREE"
         ? transaction.montant
-        : new Decimal(-Number(transaction.montant));
+        : transaction.montant.neg();
 
     await tx.compteFinancier.update({
       where: { id: transaction.compteId },
@@ -368,29 +389,29 @@ export const crediterWallet = async (
   description: string,
 ) => {
   return prisma.$transaction(async (tx) => {
-    // Obtenir ou créer le wallet (avec verrou SELECT FOR UPDATE implicite)
+    // Obtenir ou créer le wallet (upsert ne crée pas de verrou de ligne)
     let wallet = await tx.walletUtilisateur.upsert({
       where: { utilisateurId },
       update: {},
       create: { utilisateurId, solde: new Decimal(0) },
     });
 
-    // Anti-doublon : vérifier si ce mouvement a déjà été appliqué
-    const dejaApplique = await tx.mouvementWallet.findUnique({
-      where: { reference },
-    });
-    if (dejaApplique) return wallet; // idempotent
-
-    // Créer le mouvement ENTREE
-    await tx.mouvementWallet.create({
-      data: {
-        walletId: wallet.id,
-        sens: "ENTREE",
-        montant: new Decimal(montant),
-        reference,
-        description,
-      },
-    });
+    // Anti-doublon : on s'appuie sur la contrainte @unique de reference
+    // et on traite P2002 comme une opération idempotente
+    try {
+      await tx.mouvementWallet.create({
+        data: {
+          walletId: wallet.id,
+          sens: "ENTREE",
+          montant: new Decimal(montant),
+          reference,
+          description,
+        },
+      });
+    } catch (err: any) {
+      if (err?.code === "P2002") return wallet; // mouvement déjà appliqué, idempotent
+      throw err;
+    }
 
     // Recalculer le solde depuis les mouvements (plus fiable que l'incrément)
     const totaux = await tx.mouvementWallet.groupBy({

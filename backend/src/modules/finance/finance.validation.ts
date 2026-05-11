@@ -20,6 +20,15 @@ export const createCompteValidation = [
   body("paysId").optional({ nullable: true }).isUUID(),
 ];
 
+export const updateCompteValidation = [
+  body("nom")
+    .optional()
+    .trim()
+    .isLength({ max: 150 })
+    .withMessage("Nom trop long"),
+  body("actif").optional().isBoolean().withMessage("actif doit être un booléen"),
+];
+
 // ----------------------------------------------------------------
 // TRANSACTION
 // ----------------------------------------------------------------

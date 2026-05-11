@@ -43,6 +43,10 @@ export const createCompte = async (req: Request, res: Response) => {
 };
 
 export const updateCompte = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty())
+    return error(res, "Données invalides", 400, errors.array());
+
   try {
     const data = await financeService.updateCompte(
       req.params.id as string,
@@ -50,6 +54,7 @@ export const updateCompte = async (req: Request, res: Response) => {
     );
     return success(res, data, "Compte mis à jour");
   } catch (err: any) {
+    if (err.message === "Compte introuvable") return error(res, err.message, 404);
     return error(res, err.message, 400);
   }
 };
@@ -90,6 +95,8 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
     const data = await financeService.createTransaction(req.body, req.user!.id);
     return success(res, data, "Transaction enregistrée", 201);
   } catch (err: any) {
+    if (/introuvable/i.test(err.message)) return error(res, err.message, 404);
+    if (/insuffisant/i.test(err.message)) return error(res, err.message, 422);
     return error(res, err.message, 400);
   }
 };
@@ -102,6 +109,8 @@ export const annulerTransaction = async (req: AuthRequest, res: Response) => {
     );
     return success(res, data, "Transaction annulée par contrepassation");
   } catch (err: any) {
+    if (/introuvable/i.test(err.message)) return error(res, err.message, 404);
+    if (/déjà annulée/i.test(err.message)) return error(res, err.message, 409);
     return error(res, err.message, 400);
   }
 };

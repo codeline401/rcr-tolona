@@ -101,3 +101,42 @@ export const listCotisationValidation = [
   query("membreId").optional().isString(),
   query("payee").optional().isBoolean().toBoolean(),
 ];
+
+export const updateCampagneValidation = [
+  body("name")
+    .optional()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage("Nom trop long"),
+  body("annee")
+    .optional()
+    .isInt({ min: 2000, max: 2100 })
+    .withMessage("Année invalide"),
+  body("dateDebut")
+    .optional()
+    .isISO8601()
+    .withMessage("Date de début invalide"),
+  body("dateFin")
+    .optional({ nullable: true })
+    .isISO8601()
+    .withMessage("Date de fin invalide"),
+  body("active").optional().isBoolean(),
+];
+
+export const updateTypeCotisationValidation = [
+  body("name")
+    .optional()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage("Nom trop long"),
+  body("montantFixe")
+    .optional({ nullable: true })
+    .isDecimal({ decimal_digits: "0,2" })
+    .withMessage("Montant invalide"),
+  body("nombreTranche")
+    .optional()
+    .isInt({ min: 1, max: 12 })
+    .withMessage("Nombre de tranches invalide"),
+  body("obligatoire").optional().isBoolean(),
+  body("actif").optional().isBoolean(),
+];

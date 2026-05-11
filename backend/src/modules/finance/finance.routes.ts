@@ -10,6 +10,7 @@ import {
   createCompteValidation,
   createTransactionValidation,
   listTransactionValidation,
+  updateCompteValidation,
 } from "./finance.validation";
 
 const router = Router();
@@ -27,7 +28,7 @@ router.get("/dashboard", ctrl.getDashboard);
 router.get("/comptes", ctrl.getComptes);
 router.get("/comptes/:id", ctrl.getCompteById);
 router.post("/comptes", isStaff, createCompteValidation, ctrl.createCompte);
-router.patch("/comptes/:id", isStaff, ctrl.updateCompte);
+router.patch("/comptes/:id", isStaff, updateCompteValidation, ctrl.updateCompte);
 
 // ----------------------------------------------------------------
 // TRANSACTIONS  →  /api/finance/transactions

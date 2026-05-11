@@ -12,6 +12,8 @@ import {
   createCotisationValidation,
   createPaiementValidation,
   listCotisationValidation,
+  updateCampagneValidation,
+  updateTypeCotisationValidation,
 } from "./cotisation.validation";
 
 const router = Router();
@@ -34,7 +36,7 @@ router.post(
   createCampagneValidation,
   ctrl.createCampagne,
 );
-router.patch("/campagnes/:id", isStaff, ctrl.updateCampagne);
+router.patch("/campagnes/:id", isStaff, updateCampagneValidation, ctrl.updateCampagne);
 router.delete("/campagnes/:id", isStaff, ctrl.deleteCampagne);
 
 // ----------------------------------------------------------------
@@ -47,7 +49,7 @@ router.post(
   createTypeCotisationValidation,
   ctrl.createTypeCotisation,
 );
-router.patch("/types/:id", isStaff, ctrl.updateTypeCotisation);
+router.patch("/types/:id", isStaff, updateTypeCotisationValidation, ctrl.updateTypeCotisation);
 
 // ----------------------------------------------------------------
 // COTISATIONS  →  /api/cotisations
