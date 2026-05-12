@@ -27,30 +27,32 @@ model Province {
 }
 
 model Region {
-  id         String     @id @default(uuid())
-  name       String     @unique
-  code       String?    @unique // ex: "A", "B"...
-  order      Int?
-  province   Province   @relation(fields: [provinceId], references: [id])
-  provinceId String
-  districts  District[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id                     String                  @id @default(uuid())
+  name                   String                  @unique
+  code                   String?                 @unique // ex: "A", "B"...
+  order                  Int?
+  province               Province                @relation(fields: [provinceId], references: [id])
+  provinceId             String
+  districts              District[]
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  repartitionCotisations RepartitionCotisation[]
 }
 
 model District {
-  id               String           @id @default(uuid())
-  name             String           @unique
-  code             String?
-  isValid          Boolean          @default(false)
-  isArrondissement Boolean          @default(false)
-  region           Region           @relation(fields: [regionId], references: [id])
-  regionId         String
-  communes         Commune[]
-  adresses         Adresse[]
-  compteFinancier  CompteFinancier? // chaque district a une caisse
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  id                     String                  @id @default(uuid())
+  name                   String                  @unique
+  code                   String?
+  isValid                Boolean                 @default(false)
+  isArrondissement       Boolean                 @default(false)
+  region                 Region                  @relation(fields: [regionId], references: [id])
+  regionId               String
+  communes               Commune[]
+  adresses               Adresse[]
+  compteFinancier        CompteFinancier? // chaque district a une caisse
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  repartitionCotisations RepartitionCotisation[]
 }
 
 model Commune {
@@ -108,8 +110,11 @@ model User {
   membresTreated  Membre[] @relation("TreatedBy")
   membresExcluded Membre[] @relation("ExcludedBy")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  transactionFinancieres TransactionFinanciere[] @relation("TransactionsCreees")
+  walletUtilisateur      WalletUtilisateur?
+  paiementCotisations    PaiementCotisation[]    @relation("PaiementsEnregistres")
 }
 
 // ============================================================
@@ -238,7 +243,7 @@ model TypeCotisation {
   id            String   @id @default(uuid())
   name          String   @unique
   description   String?
-  montantFixe   Decimal? @db.Decimal(10, 2) // montant fixé ou libre
+  montantFixe   Decimal? @db.Decimal(10, 2) // montant prédéfini (optionnel)
   nombreTranche Int      @default(1) // paiement en combien de fois
   obligatoire   Boolean  @default(true)
   actif         Boolean  @default(true)
@@ -262,21 +267,60 @@ model Cotisation {
   campagne         CampagneCotisation @relation(fields: [campagneId], references: [id])
   campagneId       String
 
-  tranches Tranche[] // paiements par tranches
+  tranches  TrancheCotisation[]
+  paiements PaiementCotisation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Un membre ne peut avoir qu'une seule cotisation par type et par campagne
+  @@unique([membreId, typeCotisationId, campagneId])
 }
 
 // Un paiement partiel d'une cotisation
-model Tranche {
-  id           String   @id @default(uuid())
-  montant      Decimal  @db.Decimal(10, 2)
-  datePaiement DateTime @default(now())
-  note         String?
+model TrancheCotisation {
+  id           String    @id @default(uuid())
+  numero       Int // numéro d'ordre de la tranche (1, 2, 3...)
+  montant      Decimal   @db.Decimal(10, 2)
+  dateEcheance DateTime? // date limite de paiement
+  payee        Boolean   @default(false) // mise à jour automatiquement
 
   cotisation   Cotisation @relation(fields: [cotisationId], references: [id], onDelete: Cascade)
   cotisationId String
+
+  paiements PaiementCotisation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Une cotisation ne peut pas avoir deux tranches avec le même numéro
+  @@unique([cotisationId, numero])
+}
+
+model PaiementCotisation {
+  id           String   @id @default(uuid())
+  montant      Decimal  @db.Decimal(10, 2)
+  datePaiement DateTime @default(now())
+
+  // Moyen de paiement
+  moyenPaiement String @default("ESPECES")
+  // "ESPECES" | "MOBILE_MONEY" | "VIREMENT" | "CHEQUE" | "AUTRE"
+
+  reference String? // numéro de référence (virement, chèque...)
+  estValide Boolean @default(true) // peut être invalidé par un admin
+
+  cotisation   Cotisation @relation(fields: [cotisationId], references: [id], onDelete: Cascade)
+  cotisationId String
+
+  // La tranche ciblée par ce paiement (optionnel)
+  tranche   TrancheCotisation? @relation(fields: [trancheId], references: [id])
+  trancheId String?
+
+  // Qui a enregistré ce paiement
+  enregistrePar   User?   @relation("PaiementsEnregistres", fields: [enregistreParId], references: [id])
+  enregistreParId String?
+
+  repartition RepartitionCotisation?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -286,22 +330,25 @@ model Tranche {
 // MODULE FINANCE
 // ============================================================
 
-// Un compte = une caisse (centrale, district, diaspora, ou collecteur individuel)
+// Un compte financier = une caisse.
+// Hiérarchie (un seul champ non-null à la fois) :
+//   membre != null   → caisse individuelle (collecteur)
+//   district != null → caisse de district
+//   pays != null     → caisse diaspora
+//   tout null        → caisse centrale
 model CompteFinancier {
   id    String  @id @default(uuid())
   nom   String  @unique
   solde Decimal @default(0) @db.Decimal(15, 2)
   actif Boolean @default(true)
 
-  // Un seul de ces champs est non-null à la fois :
   membre     Membre?   @relation(fields: [membreId], references: [id])
-  membreId   String?   @unique // caisse individuelle d'un collecteur
+  membreId   String?   @unique
   district   District? @relation(fields: [districtId], references: [id])
-  districtId String?   @unique // caisse de district
+  districtId String?   @unique
   pays       Pays?     @relation(fields: [paysId], references: [id])
-  paysId     String?   @unique // caisse diaspora
+  paysId     String?   @unique
 
-  // Si membre/district/pays sont tous NULL → c'est la caisse centrale
   transactions TransactionFinanciere[]
 
   createdAt DateTime @default(now())
@@ -309,14 +356,82 @@ model CompteFinancier {
 }
 
 model TransactionFinanciere {
-  id      String  @id @default(uuid())
-  type    String // "ENTREE" | "SORTIE"
-  source  String // "COTISATION" | "CONTRIBUTION" | "DEPENSE" | "AUTRE"
-  montant Decimal @db.Decimal(15, 2)
-  note    String?
+  id          String  @id @default(uuid())
+  type        String // "ENTREE" | "SORTIE"
+  source      String // "COTISATION" | "CONTRIBUTION" | "DEPENSE" | "AUTRE"
+  montant     Decimal @db.Decimal(15, 2)
+  reference   String  @unique // référence unique de la transaction
+  description String?
+  annule      Boolean @default(false)
 
   compte   CompteFinancier @relation(fields: [compteId], references: [id])
   compteId String
+
+  // Qui a créé cette transaction
+  createdBy   User?   @relation("TransactionsCreees", fields: [createdById], references: [id])
+  createdById String?
+
+  // Liens métier optionnels (traçabilité)
+  cotisationId         String?
+  paiementCotisationId String?
+
+  // Auto-référence : contrepassation (annulation d'une transaction)
+  transactionSource   TransactionFinanciere?  @relation("Contrepassations", fields: [transactionSourceId], references: [id])
+  transactionSourceId String?
+  contrepassations    TransactionFinanciere[] @relation("Contrepassations")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Répartition analytique parallèle d'un paiement de cotisation.
+// Ne modifie PAS les soldes réels — sert uniquement aux rapports.
+// Madagascar : 60% district, 20% région, 20% national
+// Diaspora   : 100% national
+model RepartitionCotisation {
+  id            String  @id @default(uuid())
+  montantTotal  Decimal @db.Decimal(15, 2)
+  partDistrict  Decimal @db.Decimal(15, 2)
+  partRegion    Decimal @db.Decimal(15, 2)
+  partNationale Decimal @db.Decimal(15, 2)
+
+  // Référence au paiement source (unique = un paiement = une répartition)
+  paiement   PaiementCotisation @relation(fields: [paiementId], references: [id])
+  paiementId String             @unique
+
+  district   District? @relation(fields: [districtId], references: [id])
+  districtId String?
+  region     Region?   @relation(fields: [regionId], references: [id])
+  regionId   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Wallet personnel d'un utilisateur collecteur
+model WalletUtilisateur {
+  id    String  @id @default(uuid())
+  solde Decimal @default(0) @db.Decimal(15, 2)
+
+  utilisateur   User   @relation(fields: [utilisateurId], references: [id])
+  utilisateurId String @unique
+
+  mouvements MouvementWallet[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Mouvement sur un wallet (entrée/sortie)
+model MouvementWallet {
+  id          String  @id @default(uuid())
+  sens        String // "ENTREE" | "SORTIE"
+  montant     Decimal @db.Decimal(15, 2)
+  reference   String  @unique // ex: "COT-uuid" pour anti-doublon
+  description String?
+
+  wallet   WalletUtilisateur @relation(fields: [walletId], references: [id])
+  walletId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
