@@ -37,6 +37,7 @@ model Region {
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
   repartitionCotisations RepartitionCotisation[]
+  electionConfigs        ElectionConfig[]        @relation("ElectionConfigRegion")
 }
 
 model District {
@@ -129,8 +130,9 @@ model Pays {
   membres         Membre[] // membres de ce pays (diaspora)
   compteFinancier CompteFinancier? // caisse diaspora pour ce pays
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  electionConfigs ElectionConfig[] @relation("ElectionConfigPays")
 }
 
 model Membre {
@@ -508,6 +510,24 @@ model Vote {
 
   // Un utilisateur ne peut voter qu'une seule fois par élection
   @@unique([electionId, userId])
+}
+
+// Configuration globale des élections (qui peut voter)
+model ElectionConfig {
+  id         String    @id @default(uuid())
+  name       String    @default("Config globale")
+  dateLimite DateTime?
+
+  // Filtrer les électeurs par pays et/ou région
+  pays     Pays?   @relation("ElectionConfigPays", fields: [paysId], references: [id])
+  paysId   String?
+  region   Region? @relation("ElectionConfigRegion", fields: [regionId], references: [id])
+  regionId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, paysId, regionId])
 }
 
 // Token à usage unique pour les votes anonymes
