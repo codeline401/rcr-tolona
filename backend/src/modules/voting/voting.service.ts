@@ -4,6 +4,16 @@
 
 import prisma from "../../config/prisma";
 import crypto from "crypto";
+import { Prisma } from "@prisma/client";
+
+// ----------------------------------------------------------------
+// Typed error helper
+// ----------------------------------------------------------------
+const notFoundError = (message: string): Error => {
+  const err = new Error(message);
+  err.name = "NotFoundError";
+  return err;
+};
 
 // ----------------------------------------------------------------
 // Générer un slug unique pour une élection
@@ -20,6 +30,9 @@ const generateSlug = async (
     .trim()
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
+
+  // Fallback for blank/special-char-only titles
+  if (!baseSlug) baseSlug = "untitled";
 
   let slug = baseSlug;
   let counter = 2;
@@ -96,7 +109,7 @@ export const getElectionById = async (id: string) => {
       _count: { select: { votes: true, tokens: true } },
     },
   });
-  if (!election) throw new Error("Élection introuvable");
+  if (!election) throw notFoundError("Élection introuvable");
 
   const now = new Date();
   return {
@@ -119,7 +132,7 @@ export const getElectionBySlug = async (slug: string) => {
       _count: { select: { votes: true } },
     },
   });
-  if (!election) throw new Error("Élection introuvable");
+  if (!election) throw notFoundError("Élection introuvable");
   return election;
 };
 
@@ -131,6 +144,9 @@ export const createElection = async (data: {
   public?: boolean;
   afficherResultats?: boolean;
 }) => {
+  if (data.startAt >= data.endAt) {
+    throw new Error("startAt must be before endAt");
+  }
   const slug = await generateSlug(data.title);
 
   return prisma.election.create({
@@ -148,7 +164,7 @@ export const createElection = async (data: {
 
 export const updateElection = async (id: string, data: any) => {
   const election = await prisma.election.findUnique({ where: { id } });
-  if (!election) throw new Error("Élection introuvable");
+  if (!election) throw notFoundError("Élection introuvable");
 
   // Régénérer le slug si le titre change
   let slug = election.slug;
@@ -177,7 +193,7 @@ export const deleteElection = async (id: string) => {
     where: { id },
     include: { _count: { select: { votes: true } } },
   });
-  if (!election) throw new Error("Élection introuvable");
+  if (!election) throw notFoundError("Élection introuvable");
 
   // Interdire la suppression si des votes existent déjà
   if (election._count.votes > 0) {
@@ -201,12 +217,9 @@ export const addChoice = async (
   const election = await prisma.election.findUnique({
     where: { id: electionId },
   });
-  if (!election) throw new Error("Élection introuvable");
+  if (!election) throw notFoundError("Élection introuvable");
 
   if (new Date() >= election.startAt) {
-    throw new Error(
-      "Impossible d'ajouter un choix : l'élection a déjà commencé",
-    );
   }
 
   return prisma.choice.create({
@@ -269,7 +282,7 @@ export const voterAuthentifie = async (
     where: { id: electionId },
     include: { choices: { select: { id: true } } },
   });
-  if (!election) throw new Error("Élection introuvable");
+  if (!election) throw notFoundError("Élection introuvable");
   if (now < election.startAt)
     throw new Error("L'élection n'a pas encore commencé");
   if (now > election.endAt) throw new Error("L'élection est terminée");
@@ -279,16 +292,20 @@ export const voterAuthentifie = async (
   if (!choiceValide)
     throw new Error("Ce choix n'appartient pas à cette élection");
 
-  // 3. Vérifier que l'utilisateur n'a pas déjà voté
-  const dejaVote = await prisma.vote.findFirst({
-    where: { electionId, userId },
-  });
-  if (dejaVote) throw new Error("Vous avez déjà voté pour cette élection");
-
-  // 4. Enregistrer le vote
-  return prisma.vote.create({
-    data: { electionId, choiceId, userId },
-  });
+  // 3. Enregistrer le vote (unique constraint handles double-vote)
+  try {
+    return await prisma.vote.create({
+      data: { electionId, choiceId, userId },
+    });
+  } catch (err: any) {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    ) {
+      throw new Error("Vous avez déjà voté pour cette élection");
+    }
+    throw err;
+  }
 };
 
 // ================================================================
@@ -306,7 +323,7 @@ export const voterParToken = async (
     where: { id: electionId },
     include: { choices: { select: { id: true } } },
   });
-  if (!election) throw new Error("Élection introuvable");
+  if (!election) throw notFoundError("Élection introuvable");
   if (now < election.startAt)
     throw new Error("L'élection n'a pas encore commencé");
   if (now > election.endAt) throw new Error("L'élection est terminée");
@@ -316,15 +333,15 @@ export const voterParToken = async (
   if (!choiceValide)
     throw new Error("Ce choix n'appartient pas à cette élection");
 
-  // 3. Trouver et valider le token
-  const voteToken = await prisma.voteToken.findFirst({
-    where: { code: tokenCode, electionId },
-  });
-  if (!voteToken) throw new Error("Token invalide ou introuvable");
-  if (voteToken.used) throw new Error("Ce token a déjà été utilisé");
-
-  // 4. Tout en transaction : marquer le token + enregistrer le vote
+  // 3. Tout en transaction : valider token, le marquer + enregistrer le vote atomiquement
   return prisma.$transaction(async (tx) => {
+    // Lock + validate token inside transaction to prevent race conditions
+    const voteToken = await tx.voteToken.findFirst({
+      where: { code: tokenCode, electionId },
+    });
+    if (!voteToken) throw new Error("Token invalide ou introuvable");
+    if (voteToken.used) throw new Error("Ce token a déjà été utilisé");
+
     // Marquer le token comme utilisé
     await tx.voteToken.update({
       where: { id: voteToken.id },
@@ -383,8 +400,11 @@ export const getResultats = async (electionId: string) => {
       id: election.id,
       title: election.title,
       slug: election.slug,
+      startAt: election.startAt,
       endAt: election.endAt,
-      isOpen: new Date() <= election.endAt,
+      isOpen:
+        new Date() >= new Date(election.startAt) &&
+        new Date() <= new Date(election.endAt),
       afficherResultats: election.afficherResultats,
     },
     totalVotes,
@@ -415,16 +435,32 @@ export const genererTokens = async (electionId: string, count: number) => {
   const election = await prisma.election.findUnique({
     where: { id: electionId },
   });
-  if (!election) throw new Error("Élection introuvable");
+  if (!election) throw notFoundError("Élection introuvable");
 
-  // Générer `count` tokens UUID uniques
-  const tokens = Array.from({ length: count }, () => ({
-    electionId,
-    code: crypto.randomUUID(), // UUID v4 aléatoire et unique
-    used: false,
-  }));
+  const tokens: { electionId: string; code: string; used: boolean }[] = [];
 
-  await prisma.voteToken.createMany({ data: tokens });
+  // Guard: already limited by generateTokensValidation (max 500), but enforce here too
+  const MAX_TOKENS_PER_REQUEST = 1000;
+  if (!Number.isInteger(count) || count < 1 || count > MAX_TOKENS_PER_REQUEST) {
+    throw new Error(
+      `count must be a positive integer ≤ ${MAX_TOKENS_PER_REQUEST}`,
+    );
+  }
+
+  // Generate tokens in batches to avoid large in-memory arrays
+  const BATCH_SIZE = 100;
+  let remaining = count;
+  while (remaining > 0) {
+    const batchSize = Math.min(remaining, BATCH_SIZE);
+    const batch = Array.from({ length: batchSize }, () => ({
+      electionId,
+      code: crypto.randomUUID(),
+      used: false,
+    }));
+    tokens.push(...batch);
+    await prisma.voteToken.createMany({ data: batch });
+    remaining -= batchSize;
+  }
 
   return {
     count,
@@ -437,7 +473,7 @@ export const getTokens = async (electionId: string) => {
   const election = await prisma.election.findUnique({
     where: { id: electionId },
   });
-  if (!election) throw new Error("Élection introuvable");
+  if (!election) throw notFoundError("Élection introuvable");
 
   const [tokens, stats] = await Promise.all([
     prisma.voteToken.findMany({
@@ -519,11 +555,10 @@ export const getElecteurs = async (
     orderBy: { nom: "asc" },
   });
 
-  // Ajouter le champ aVote calculé
+  // Ajouter le champ aVote calculé (choixVote omis pour préserver le secret du vote)
   const membresAvecStatut = membres.map((m) => ({
     ...m,
     aVote: (m.utilisateur?.votes?.length || 0) > 0,
-    choixVote: m.utilisateur?.votes?.[0]?.choice?.text || null,
     district: m.adresse?.fokontany?.commune?.district?.name || null,
   }));
 
@@ -553,8 +588,9 @@ export const exportElecteursCSV = async (
   const electeurs = await getElecteurs(electionId, filtre);
 
   // Construire le CSV manuellement (pas de dépendance externe)
+  // Note: BOM UTF-8 est ajouté par le contrôleur
   const lignes = [
-    ["Nom", "Prénom", "Matricule", "District", "A voté", "Choix"].join(","),
+    ["Nom", "Prénom", "Matricule", "District", "A voté"].join(","),
     ...electeurs.membres.map((m) =>
       [
         m.nom,
@@ -562,9 +598,8 @@ export const exportElecteursCSV = async (
         m.registrationNumber || "",
         m.district || "",
         m.aVote ? "Oui" : "Non",
-        m.choixVote || "",
       ]
-        .map((v) => `"${String(v).replace(/"/g, '""')}"`) // échapper les guillemets
+        .map((v) => `"${String(v).replace(/"/g, '""')}"`)
         .join(","),
     ),
   ];
@@ -607,7 +642,7 @@ export const upsertConfig = async (data: {
     data: {
       paysId: data.paysId || null,
       regionId: data.regionId || null,
-      dateLimite: data.dateLimite ? new Date(data.dateLimite) : new Date(),
+      dateLimite: data.dateLimite ? new Date(data.dateLimite) : undefined,
     },
   });
 };

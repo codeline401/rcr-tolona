@@ -33,7 +33,8 @@ export const getElectionById = async (req: Request, res: Response) => {
     const data = await votingService.getElectionById(req.params.id as string);
     return success(res, data);
   } catch (err: any) {
-    return error(res, err.message, 404);
+    if (err.name === "NotFoundError") return error(res, err.message, 404);
+    return error(res, "Internal server error", 500);
   }
 };
 
@@ -44,7 +45,8 @@ export const getElectionBySlug = async (req: Request, res: Response) => {
     );
     return success(res, data);
   } catch (err: any) {
-    return error(res, err.message, 404);
+    if (err.name === "NotFoundError") return error(res, err.message, 404);
+    return error(res, "Internal server error", 500);
   }
 };
 
@@ -107,6 +109,10 @@ export const addChoice = async (req: Request, res: Response) => {
 };
 
 export const updateChoice = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty())
+    return error(res, "Données invalides", 400, errors.array());
+
   try {
     const data = await votingService.updateChoice(
       req.params.choiceId as string,
@@ -137,11 +143,14 @@ export const voterAuthentifie = async (req: AuthRequest, res: Response) => {
   if (!errors.isEmpty())
     return error(res, "Données invalides", 400, errors.array());
 
+  const userId = req.user?.id;
+  if (!userId) return error(res, "Non authentifié", 401);
+
   try {
     const vote = await votingService.voterAuthentifie(
       req.params.electionId as string,
       req.body.choiceId as string,
-      req.user!.id as string,
+      userId,
     );
     return success(res, vote, "Vote enregistré", 201);
   } catch (err: any) {
@@ -169,10 +178,13 @@ export const voterParToken = async (req: Request, res: Response) => {
 
 // Statut de vote de l'utilisateur connecté
 export const getStatutVote = async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) return error(res, "Non authentifié", 401);
+
   try {
     const data = await votingService.getStatutVote(
       req.params.electionId as string,
-      req.user!.id as string,
+      userId,
     );
     return success(res, data);
   } catch (err: any) {
@@ -247,6 +259,14 @@ export const exportElecteursCSV = async (req: Request, res: Response) => {
   try {
     const filtre =
       (req.query.filtre as "tous" | "voted" | "not_voted") || "tous";
+
+    // Sanitize values used in Content-Disposition to prevent header injection
+    const safeId = (req.params.electionId as string).replace(
+      /[^a-zA-Z0-9_-]/g,
+      "",
+    );
+    const safeFiltre = filtre.replace(/[^a-zA-Z0-9_-]/g, "");
+
     const csv = await votingService.exportElecteursCSV(
       req.params.electionId as string,
       filtre,
@@ -256,7 +276,7 @@ export const exportElecteursCSV = async (req: Request, res: Response) => {
     res.setHeader("Content-Type", "text/csv; charset=utf-8");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="electeurs_${req.params.electionId}_${filtre}.csv"`,
+      `attachment; filename="electeurs_${safeId}_${safeFiltre}.csv"`,
     );
     res.send("\uFEFF" + csv); // \uFEFF = BOM UTF-8 pour que Excel l'ouvre correctement
   } catch (err: any) {
@@ -278,6 +298,10 @@ export const getConfig = async (_req: Request, res: Response) => {
 };
 
 export const upsertConfig = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty())
+    return error(res, "Données invalides", 400, errors.array());
+
   try {
     const data = await votingService.upsertConfig(req.body);
     return success(res, data, "Configuration mise à jour");

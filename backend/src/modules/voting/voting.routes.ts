@@ -22,10 +22,14 @@ import {
   createElectionValidation,
   updateElectionValidation,
   createChoiceValidation,
+  updateChoiceValidation,
   voteValidation,
   voteByTokenValidation,
   generateTokensValidation,
   listElectionValidation,
+  upsertConfigValidation,
+  validateElectionIdParam,
+  validateChoiceIdParam,
 } from "./voting.validation";
 
 const router = Router();
@@ -57,7 +61,7 @@ router.use(authenticate);
 
 // Liste et détail admin
 router.get("/elections", listElectionValidation, ctrl.getElections);
-router.get("/elections/:id", ctrl.getElectionById);
+router.get("/elections/:id", validateElectionIdParam, ctrl.getElectionById);
 
 // Voter (utilisateur authentifié)
 router.post("/:electionId/vote", voteValidation, ctrl.voterAuthentifie);
@@ -78,11 +82,17 @@ router.post(
 );
 router.patch(
   "/elections/:id",
+  validateElectionIdParam,
   isStaff,
   updateElectionValidation,
   ctrl.updateElection,
 );
-router.delete("/elections/:id", isStaff, ctrl.deleteElection);
+router.delete(
+  "/elections/:id",
+  validateElectionIdParam,
+  isStaff,
+  ctrl.deleteElection,
+);
 
 // Choix d'une élection
 router.post(
@@ -91,8 +101,19 @@ router.post(
   createChoiceValidation,
   ctrl.addChoice,
 );
-router.patch("/choix/:choiceId", isStaff, ctrl.updateChoice);
-router.delete("/choix/:choiceId", isStaff, ctrl.deleteChoice);
+router.patch(
+  "/choix/:choiceId",
+  validateChoiceIdParam,
+  isStaff,
+  updateChoiceValidation,
+  ctrl.updateChoice,
+);
+router.delete(
+  "/choix/:choiceId",
+  validateChoiceIdParam,
+  isStaff,
+  ctrl.deleteChoice,
+);
 
 // Tokens
 router.post(
@@ -112,7 +133,7 @@ router.get(
 );
 
 // Config globale
-router.get("/config", ctrl.getConfig);
-router.patch("/config", isStaff, ctrl.upsertConfig);
+router.get("/config", isStaff, ctrl.getConfig);
+router.patch("/config", isStaff, upsertConfigValidation, ctrl.upsertConfig);
 
 export default router;

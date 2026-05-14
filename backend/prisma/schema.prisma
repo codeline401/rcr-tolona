@@ -514,9 +514,9 @@ model Vote {
 
 // Configuration globale des élections (qui peut voter)
 model ElectionConfig {
-  id         String   @id @default(uuid())
-  name       String   @default("Config globale")
-  dateLimite DateTime @default(now())
+  id         String    @id @default(uuid())
+  name       String    @default("Config globale")
+  dateLimite DateTime?
 
   // Filtrer les électeurs par pays et/ou région
   pays     Pays?   @relation("ElectionConfigPays", fields: [paysId], references: [id])
@@ -526,6 +526,8 @@ model ElectionConfig {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([name, paysId, regionId])
 }
 
 // Token à usage unique pour les votes anonymes
