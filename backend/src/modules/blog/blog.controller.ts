@@ -16,10 +16,16 @@ export const getPosts = async (req: Request, res: Response) => {
     return error(res, "Paramètres invalides", 400, errors.array());
 
   try {
+    const rawStatus = req.query.status;
+    const statusRaw = Array.isArray(rawStatus) ? rawStatus[0] : rawStatus;
+    const status =
+      typeof statusRaw === "string" && statusRaw.trim()
+        ? statusRaw.trim()
+        : undefined;
     const result = await blogService.getPosts({
       page: Number(req.query.page) || 1,
       limit: Number(req.query.limit) || 10,
-      status: req.query.status as string,
+      status,
       publicOnly: false, // route admin : tous les articles
     });
     return success(res, result);
@@ -29,6 +35,10 @@ export const getPosts = async (req: Request, res: Response) => {
 };
 
 export const getPublicPosts = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty())
+    return error(res, "Paramètres invalides", 400, errors.array());
+
   try {
     const result = await blogService.getPosts({
       page: Number(req.query.page) || 1,
@@ -50,7 +60,8 @@ export const getPostById = async (req: Request, res: Response) => {
     const post = await blogService.getPostById(req.params.id as string);
     return success(res, post);
   } catch (err: any) {
-    return error(res, err.message, 404);
+    if (err.name === "NotFoundError") return error(res, err.message, 404);
+    return error(res, "Internal server error", 500);
   }
 };
 
@@ -89,7 +100,8 @@ export const createPost = async (req: AuthRequest, res: Response) => {
     );
     return success(res, post, "Article créé", 201);
   } catch (err: any) {
-    return error(res, err.message, 400);
+    if (err.statusCode) return error(res, err.message, err.statusCode);
+    return error(res, "Internal server error", 500);
   }
 };
 
@@ -123,10 +135,12 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
 export const toggleStatus = async (req: Request, res: Response) => {
   try {
     const post = await blogService.toggleStatus(req.params.id as string);
+    if (!post) return error(res, "Post not found", 404);
     const msg =
       post.status === "PB" ? "Article publié" : "Article dépublié (brouillon)";
     return success(res, post, msg);
   } catch (err: any) {
+    if (err.name === "NotFoundError") return error(res, err.message, 404);
     return error(res, err.message, 400);
   }
 };

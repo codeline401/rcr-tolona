@@ -7,6 +7,15 @@ import fs from "fs";
 import path from "path";
 
 // ----------------------------------------------------------------
+// Typed error helpers
+// ----------------------------------------------------------------
+const notFoundError = (message: string): Error => {
+  const err = new Error(message);
+  err.name = "NotFoundError";
+  return err;
+};
+
+// ----------------------------------------------------------------
 // Générer un slug unique à partir du titre
 // Ex: "Mon Premier Article" → "mon-premier-article"
 // Si le slug existe déjà, on ajoute un suffixe numérique : "-2", "-3"...
@@ -107,7 +116,7 @@ export const getPosts = async (params: {
         author: {
           select: {
             id: true,
-            email: true,
+            ...(params.publicOnly ? {} : { email: true }),
             // Inclure le membre lié pour avoir le nom complet
             membre: { select: { nom: true, prenom: true, photo: true } },
           },
@@ -139,7 +148,7 @@ export const getPostById = async (id: string) => {
       },
     },
   });
-  if (!post) throw new Error("Article introuvable");
+  if (!post) throw notFoundError("Article introuvable");
   return post;
 };
 
@@ -165,7 +174,7 @@ export const getPostBySlug = async (slug: string, publicOnly = false) => {
     },
   });
 
-  if (!post) throw new Error("Article introuvable");
+  if (!post) throw notFoundError("Article introuvable");
   return post;
 };
 
@@ -194,7 +203,13 @@ export const createPost = async (
       excerpt: data.excerpt || "",
       illustration: illustration || null,
       status: data.status || "DF", // brouillon par défaut
-      publish: data.publish ? new Date(data.publish) : new Date(),
+      publish: data.publish
+        ? (() => {
+            const d = new Date(data.publish);
+            if (isNaN(d.getTime())) throw new Error("Invalid publish date");
+            return d;
+          })()
+        : new Date(),
       authorId,
     },
   });
@@ -209,7 +224,7 @@ export const updatePost = async (
   newIllustration?: string,
 ) => {
   const post = await prisma.post.findUnique({ where: { id } });
-  if (!post) throw new Error("Article introuvable");
+  if (!post) throw notFoundError("Article introuvable");
 
   // Si une nouvelle illustration est uploadée, supprimer l'ancienne
   if (newIllustration && post.illustration) {
@@ -223,11 +238,14 @@ export const updatePost = async (
   }
 
   const updateData: any = { slug };
-  const fields = ["title", "body", "excerpt", "status", "publish"];
+  const fields = ["title", "body", "excerpt", "status"];
   for (const field of fields) {
     if (data[field] !== undefined) updateData[field] = data[field];
   }
-  if (data.publish) updateData.publish = new Date(data.publish);
+  if (data.publish !== undefined) {
+    updateData.publish =
+      data.publish !== "" ? new Date(data.publish) : null;
+  }
   if (newIllustration) updateData.illustration = newIllustration;
 
   return prisma.post.update({ where: { id }, data: updateData });
@@ -238,7 +256,7 @@ export const updatePost = async (
 // ================================================================
 export const toggleStatus = async (id: string) => {
   const post = await prisma.post.findUnique({ where: { id } });
-  if (!post) throw new Error("Article introuvable");
+  if (!post) throw notFoundError("Article introuvable");
 
   const newStatus = post.status === "PB" ? "DF" : "PB";
 
@@ -260,7 +278,7 @@ export const toggleStatus = async (id: string) => {
 // ================================================================
 export const deletePost = async (id: string) => {
   const post = await prisma.post.findUnique({ where: { id } });
-  if (!post) throw new Error("Article introuvable");
+  if (!post) throw notFoundError("Article introuvable");
 
   // Supprimer l'illustration du disque si elle existe
   if (post.illustration) deleteIllustration(post.illustration);

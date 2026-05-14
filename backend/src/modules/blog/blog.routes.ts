@@ -22,6 +22,8 @@ import {
   createPostValidation,
   updatePostValidation,
   listPostValidation,
+  validateIdParam,
+  validateSlug,
 } from "./blog.validation";
 
 const router = Router();
@@ -30,7 +32,7 @@ const router = Router();
 // Routes PUBLIQUES — pas besoin d'être connecté
 // ----------------------------------------------------------------
 router.get("/public", listPostValidation, blogController.getPublicPosts);
-router.get("/slug/:slug", blogController.getPostBySlug);
+router.get("/slug/:slug", validateSlug, blogController.getPostBySlug);
 
 // ----------------------------------------------------------------
 // Routes PRIVÉES — connecté requis à partir d'ici
@@ -42,7 +44,7 @@ router.get("/stats", blogController.getStats);
 
 // Liste admin + détail
 router.get("/", listPostValidation, blogController.getPosts);
-router.get("/:id", blogController.getPostById);
+router.get("/:id", validateIdParam, blogController.getPostById);
 
 // Création et modification (staff uniquement + upload illustration)
 router.post(
@@ -54,12 +56,13 @@ router.post(
 );
 router.patch(
   "/:id",
+  validateIdParam,
   isStaff,
   uploadIllustration,
   updatePostValidation,
   blogController.updatePost,
 );
-router.patch("/:id/toggle", isStaff, blogController.toggleStatus);
-router.delete("/:id", isStaff, blogController.deletePost);
+router.patch("/:id/toggle", validateIdParam, isStaff, blogController.toggleStatus);
+router.delete("/:id", validateIdParam, isStaff, blogController.deletePost);
 
 export default router;

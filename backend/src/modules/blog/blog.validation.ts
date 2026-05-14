@@ -1,7 +1,9 @@
 // src/modules/blog/blog.validation.ts
 // Règles de validation pour la création et modification d'articles.
 
-import { body, query } from "express-validator";
+import { body, param, query } from "express-validator";
+import { validationResult } from "express-validator";
+import type { Request, Response, NextFunction } from "express";
 
 // ----------------------------------------------------------------
 // Règles de création d'un article
@@ -40,6 +42,8 @@ export const updatePostValidation = [
   body("title")
     .optional()
     .trim()
+    .notEmpty()
+    .withMessage("Le titre ne peut pas être vide")
     .isLength({ max: 250 })
     .withMessage("Titre trop long"),
 
@@ -49,7 +53,11 @@ export const updatePostValidation = [
     .notEmpty()
     .withMessage("Le contenu ne peut pas être vide"),
 
-  body("excerpt").optional().trim(),
+  body("excerpt")
+    .optional()
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage("Résumé trop long"),
 
   body("status")
     .optional()
@@ -79,4 +87,31 @@ export const listPostValidation = [
     .toInt(),
 
   query("status").optional().isIn(["DF", "PB"]).withMessage("Statut invalide"),
+];
+
+// ----------------------------------------------------------------
+// Validation du paramètre :id (UUID v4)
+// ----------------------------------------------------------------
+const runValidator = (req: Request, res: Response, next: NextFunction): void => {
+  const errs = validationResult(req);
+  if (!errs.isEmpty()) {
+    res.status(400).json({ errors: errs.array() });
+    return;
+  }
+  next();
+};
+
+export const validateIdParam = [
+  param("id").isUUID().withMessage("Identifiant invalide"),
+  runValidator,
+];
+
+// ----------------------------------------------------------------
+// Validation du paramètre :slug
+// ----------------------------------------------------------------
+export const validateSlug = [
+  param("slug")
+    .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+    .withMessage("Slug invalide"),
+  runValidator,
 ];
