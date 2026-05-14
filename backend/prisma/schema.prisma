@@ -54,6 +54,7 @@ model District {
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
   repartitionCotisations RepartitionCotisation[]
+  activites              Activite[] @relation("ActiviteDistrict")
 }
 
 model Commune {
@@ -217,8 +218,11 @@ model Membre {
   cotisations        Cotisation[]
   caisseIndividuelle CompteFinancier?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  activites           Activite[]     @relation("ActiviteResponsable")
+  activitesCanceledBy Activite[]     @relation("ActiviteCanceledBy")
+  contributions       Contribution[] @relation("ContributionMembre")
 }
 
 // ============================================================
@@ -542,20 +546,108 @@ model VoteToken {
   createdAt DateTime @default(now())
 }
 
-// ============================================================
-// MODULE ACTIVITES
-// ============================================================
+// ================================================================
+// ACTIVITÉS — événements, projets, activités associatives
+// ================================================================
 
 model Activite {
-  id           String    @id @default(uuid())
-  title        String
-  description  String?
+  id          String @id @default(uuid())
+  titre       String
+  description String @default("")
+
+  // Responsable de l'activité (membre, optionnel)
+  responsable   Membre? @relation("ActiviteResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
+  responsableId String?
+
   dateDebut    DateTime
-  dateFin      DateTime?
+  dateFin      DateTime
   lieu         String?
-  illustration String?
-  publique     Boolean   @default(true)
+  illustration String? // chemin vers l'image
+  publique     Boolean  @default(true)
+
+  // Budget
+  budgetPrevu         Decimal  @default(0) @db.Decimal(12, 2)
+  objectifFinancement Decimal? @db.Decimal(12, 2) // si null → utilise budgetPrevu
+
+  // Localisation
+  district   District? @relation("ActiviteDistrict", fields: [districtId], references: [id], onDelete: SetNull)
+  districtId String?
+
+  // Statut
+  finished     Boolean @default(false)
+  canceled     Boolean @default(false)
+  canceledBy   Membre? @relation("ActiviteCanceledBy", fields: [canceledById], references: [id], onDelete: SetNull)
+  canceledById String?
+
+  // Relations
+  etapes        Etape[]
+  postesBudget  PosteBudget[]
+  contributions Contribution[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Étapes d'une activité (comme un plan de projet)
+model Etape {
+  id          String   @id @default(uuid())
+  activite    Activite @relation(fields: [activiteId], references: [id], onDelete: Cascade)
+  activiteId  String
+  nom         String
+  description String   @default("")
+  dateDebut   DateTime
+  dateFin     DateTime
+
+  statut EtapeStatut @default(non_demarre)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EtapeStatut {
+  non_demarre
+  en_cours
+  termine
+}
+
+// Postes budgétaires d'une activité
+model PosteBudget {
+  id           String   @id @default(uuid())
+  activite     Activite @relation(fields: [activiteId], references: [id], onDelete: Cascade)
+  activiteId   String
+  nomPoste     String
+  montantPrevu Decimal  @db.Decimal(12, 2)
+  montantReel  Decimal? @db.Decimal(12, 2) // null si pas encore dépensé
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Contributions / dons pour financement participatif
+model Contribution {
+  id         String   @id @default(uuid())
+  activite   Activite @relation(fields: [activiteId], references: [id], onDelete: Cascade)
+  activiteId String
+
+  // Contributeur identifié (membre) ou anonyme
+  contributeur   Membre? @relation("ContributionMembre", fields: [contributeurId], references: [id], onDelete: SetNull)
+  contributeurId String?
+  nomAnonyme     String? // si pas de compte
+  emailAnonyme   String?
+
+  montant           Decimal @db.Decimal(12, 2)
+  referencePaiement String?
+  preuvePaiement    String? // chemin fichier
+
+  statut ContributionStatut @default(en_attente)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ContributionStatut {
+  en_attente
+  valide
+  annule
+  rembourse
 }
