@@ -13,8 +13,8 @@ CREATE TYPE "EtapeStatut" AS ENUM ('non_demarre', 'en_cours', 'termine');
 -- CreateEnum
 CREATE TYPE "ContributionStatut" AS ENUM ('en_attente', 'valide', 'annule', 'rembourse');
 
--- AlterTable
-ALTER TABLE "Activite" DROP COLUMN "title",
+-- AlterTable: Step 1 — add new columns; titre nullable to allow data migration
+ALTER TABLE "Activite"
 ADD COLUMN     "budgetPrevu" DECIMAL(12,2) NOT NULL DEFAULT 0,
 ADD COLUMN     "canceled" BOOLEAN NOT NULL DEFAULT false,
 ADD COLUMN     "canceledById" TEXT,
@@ -22,7 +22,17 @@ ADD COLUMN     "districtId" TEXT,
 ADD COLUMN     "finished" BOOLEAN NOT NULL DEFAULT false,
 ADD COLUMN     "objectifFinancement" DECIMAL(12,2),
 ADD COLUMN     "responsableId" TEXT,
-ADD COLUMN     "titre" TEXT NOT NULL,
+ADD COLUMN     "titre" TEXT;
+
+-- AlterTable: Step 2 — migrate existing data before setting NOT NULL
+UPDATE "Activite" SET "titre" = COALESCE("title", 'Sans titre') WHERE "titre" IS NULL;
+UPDATE "Activite" SET "description" = '' WHERE "description" IS NULL;
+UPDATE "Activite" SET "dateFin" = "dateDebut" + INTERVAL '1 day' WHERE "dateFin" IS NULL;
+
+-- AlterTable: Step 3 — drop old column and enforce NOT NULL constraints
+ALTER TABLE "Activite"
+DROP COLUMN "title",
+ALTER COLUMN "titre" SET NOT NULL,
 ALTER COLUMN "description" SET NOT NULL,
 ALTER COLUMN "description" SET DEFAULT '',
 ALTER COLUMN "dateFin" SET NOT NULL;

@@ -21,13 +21,14 @@ export const getActivites = async (req: Request, res: Response) => {
       limit: Number(req.query.limit) || 10,
       search: req.query.search as string,
       districtId: req.query.districtId as string,
+      // listActiviteValidation applies .toBoolean(), so these are already booleans at runtime
       finished:
         req.query.finished !== undefined
-          ? req.query.finished === "true"
+          ? (req.query.finished as unknown as boolean)
           : undefined,
       canceled:
         req.query.canceled !== undefined
-          ? req.query.canceled === "true"
+          ? (req.query.canceled as unknown as boolean)
           : undefined,
     });
     return success(res, result);
@@ -60,6 +61,23 @@ export const getActiviteById = async (req: Request, res: Response) => {
     return success(res, data);
   } catch (err: any) {
     return error(res, err.message, 404);
+  }
+};
+
+// Public variant — only serves activités that are publique and not canceled
+export const getActivitePubliqueById = async (req: Request, res: Response) => {
+  try {
+    const data = await activitesService.getActiviteById(
+      req.params.id as string,
+    );
+    if (!data.publique || data.canceled) {
+      return error(res, "Activité introuvable", 404);
+    }
+    return success(res, data);
+  } catch (err: any) {
+    if (err.message === "Activité introuvable")
+      return error(res, err.message, 404);
+    return error(res, err.message, 500);
   }
 };
 

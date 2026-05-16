@@ -3,6 +3,7 @@
 // Gère : CRUD activités, étapes, postes budgétaires, contributions.
 
 import prisma from "../../config/prisma";
+import { Prisma } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 
@@ -23,7 +24,7 @@ export const getActivites = async (params: {
   const limit = params.limit || 10;
   const skip = (page - 1) * limit;
 
-  const where: any = {};
+  const where: Prisma.ActiviteWhereInput = {};
   if (params.publique) where.publique = true;
   if (params.finished !== undefined) where.finished = params.finished;
   if (params.canceled !== undefined) where.canceled = params.canceled;
@@ -94,6 +95,8 @@ export const getActiviteById = async (id: string) => {
   const objectifReel = Number(
     activite.objectifFinancement || activite.budgetPrevu,
   );
+  // pourcentageFinancement = (totalContributions / objectifReel) * 100,
+  // rounded to 2 decimal places via ×100 → Math.round → ÷100
   const pourcentageFinancement =
     objectifReel > 0
       ? Math.round((totalContributions / objectifReel) * 100 * 100) / 100
@@ -156,7 +159,12 @@ export const updateActivite = async (
   // Supprimer l'ancienne illustration si une nouvelle est fournie
   if (newIllustration && activite.illustration) {
     const oldPath = path.join(process.cwd(), "uploads", activite.illustration);
-    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    try {
+      await fs.promises.access(oldPath);
+      await fs.promises.unlink(oldPath);
+    } catch {
+      // file already gone or not accessible — proceed silently
+    }
   }
 
   const updateData: any = {};
@@ -172,9 +180,13 @@ export const updateActivite = async (
   ];
   for (const field of fields) {
     if (data[field] !== undefined) {
-      if (["budgetPrevu", "objectifFinancement"].includes(field)) {
+      if (["objectifFinancement"].includes(field)) {
         updateData[field] =
           data[field] === null ? null : parseFloat(data[field]);
+      } else if (field === "budgetPrevu") {
+        // budgetPrevu is NOT NULL in the schema — default to 0 instead of null
+        updateData.budgetPrevu =
+          data.budgetPrevu === null ? 0 : parseFloat(data.budgetPrevu);
       } else {
         updateData[field] = data[field];
       }
@@ -194,7 +206,12 @@ export const deleteActivite = async (id: string) => {
   // Supprimer le fichier illustration si existant
   if (activite.illustration) {
     const filePath = path.join(process.cwd(), "uploads", activite.illustration);
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    try {
+      await fs.promises.access(filePath);
+      await fs.promises.unlink(filePath);
+    } catch {
+      // file already gone or not accessible — proceed silently
+    }
   }
 
   return prisma.activite.delete({ where: { id } });
@@ -211,15 +228,24 @@ export const terminerActivite = async (id: string) => {
 };
 
 // Annuler une activité
-export const annulerActivite = async (id: string, canceledById?: string) => {
+export const annulerActivite = async (id: string, userId?: string) => {
   const activite = await prisma.activite.findUnique({ where: { id } });
   if (!activite) throw new Error("Activité introuvable");
   if (activite.finished) throw new Error("Cette activité est déjà terminée");
   if (activite.canceled) throw new Error("Cette activité est déjà annulée");
 
+  // canceledById must be a Membre ID — look up via utilisateurId
+  let canceledById: string | null = null;
+  if (userId) {
+    const membre = await prisma.membre.findUnique({
+      where: { utilisateurId: userId },
+    });
+    canceledById = membre?.id ?? null;
+  }
+
   return prisma.activite.update({
     where: { id },
-    data: { canceled: true, canceledById: canceledById || null },
+    data: { canceled: true, canceledById },
   });
 };
 
@@ -308,6 +334,24 @@ export const updateEtape = async (etapeId: string, data: any) => {
   if (data.statut) updateData.statut = data.statut;
   if (data.dateDebut) updateData.dateDebut = new Date(data.dateDebut);
   if (data.dateFin) updateData.dateFin = new Date(data.dateFin);
+
+  // Validate date order and bounds against parent activity
+  if (data.dateDebut || data.dateFin) {
+    const debut = updateData.dateDebut ?? etape.dateDebut;
+    const fin = updateData.dateFin ?? etape.dateFin;
+    if (fin <= debut)
+      throw new Error(
+        "La date de fin de l'étape doit être après la date de début",
+      );
+    if (debut < etape.activite.dateDebut)
+      throw new Error(
+        "La date de début de l'étape ne peut pas être avant celle de l'activité",
+      );
+    if (fin > etape.activite.dateFin)
+      throw new Error(
+        "La date de fin de l'étape ne peut pas être après celle de l'activité",
+      );
+  }
 
   return prisma.etape.update({ where: { id: etapeId }, data: updateData });
 };

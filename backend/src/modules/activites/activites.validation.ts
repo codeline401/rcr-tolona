@@ -1,6 +1,7 @@
 // src/modules/activites/activites.validation.ts
 
 import { body, query } from "express-validator";
+import { EtapeStatut, ContributionStatut } from "@prisma/client";
 
 // ----------------------------------------------------------------
 // ACTIVITÉ principale
@@ -23,7 +24,8 @@ export const createActiviteValidation = [
     .withMessage("Date de fin invalide")
     .toDate()
     .custom((dateFin, { req }) => {
-      if (new Date(dateFin) < new Date(req.body.dateDebut)) {
+      // dateFin and req.body.dateDebut are already Date objects after .toDate()
+      if (dateFin < req.body.dateDebut) {
         throw new Error("La date de fin doit être après la date de début");
       }
       return true;
@@ -49,7 +51,22 @@ export const updateActiviteValidation = [
   body("lieu").optional().trim(),
   body("publique").optional().isBoolean(),
   body("dateDebut").optional().isISO8601().toDate(),
-  body("dateFin").optional().isISO8601().toDate(),
+  body("dateFin")
+    .optional()
+    .isISO8601()
+    .toDate()
+    .custom((dateFin, { req }) => {
+      if (dateFin !== undefined && req.body.dateDebut !== undefined) {
+        const fin = dateFin instanceof Date ? dateFin : new Date(dateFin);
+        const debut =
+          req.body.dateDebut instanceof Date
+            ? req.body.dateDebut
+            : new Date(req.body.dateDebut);
+        if (fin < debut)
+          throw new Error("La date de fin doit être après la date de début");
+      }
+      return true;
+    }),
   body("budgetPrevu").optional().isDecimal({ decimal_digits: "0,2" }),
   body("objectifFinancement")
     .optional({ nullable: true })
@@ -70,14 +87,15 @@ export const createEtapeValidation = [
     .withMessage("Date de fin invalide")
     .toDate()
     .custom((dateFin, { req }) => {
-      if (new Date(dateFin) < new Date(req.body.dateDebut)) {
+      // dateFin and req.body.dateDebut are already Date objects after .toDate()
+      if (dateFin < req.body.dateDebut) {
         throw new Error("La date de fin doit être après la date de début");
       }
       return true;
     }),
   body("statut")
     .optional()
-    .isIn(["non_demarre", "en_cours", "termine"])
+    .isIn(Object.values(EtapeStatut))
     .withMessage("Statut invalide"),
 ];
 
@@ -109,11 +127,22 @@ export const createContributionValidation = [
   body("nomAnonyme").optional().trim(),
   body("emailAnonyme").optional().isEmail(),
   body("referencePaiement").optional().trim(),
+  // Either a registered member or an anonymous name must be provided
+  body().custom((_value, { req }) => {
+    if (!req.body.contributeurId && !req.body.nomAnonyme) {
+      throw new Error("contributeurId ou nomAnonyme requis");
+    }
+    return true;
+  }),
 ];
 
 export const validerContributionValidation = [
   body("statut")
-    .isIn(["valide", "annule", "rembourse"])
+    .isIn(
+      Object.values(ContributionStatut).filter(
+        (s) => s !== ContributionStatut.en_attente,
+      ),
+    )
     .withMessage("Statut invalide"),
 ];
 

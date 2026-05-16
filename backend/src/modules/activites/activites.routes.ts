@@ -43,7 +43,7 @@ const router = Router();
 // Routes PUBLIQUES
 // ----------------------------------------------------------------
 router.get("/public", ctrl.getActivitesPubliques);
-router.get("/:id/public", ctrl.getActiviteById);
+router.get("/:id/public", ctrl.getActivitePubliqueById);
 
 // ----------------------------------------------------------------
 // Routes PRIVÉES — authentification requise
