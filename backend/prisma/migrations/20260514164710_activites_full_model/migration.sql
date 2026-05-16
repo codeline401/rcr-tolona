@@ -49,7 +49,8 @@ CREATE TABLE "Etape" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Etape_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Etape_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "Etape_valid_dates_check" CHECK ("dateFin" >= "dateDebut")
 );
 
 -- CreateTable
@@ -102,3 +103,12 @@ ALTER TABLE "Contribution" ADD CONSTRAINT "Contribution_activiteId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "Contribution" ADD CONSTRAINT "Contribution_contributeurId_fkey" FOREIGN KEY ("contributeurId") REFERENCES "Membre"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- CreateIndex
+CREATE INDEX "activite_responsableid_idx" ON "Activite"("responsableId");
+CREATE INDEX "activite_districtid_idx" ON "Activite"("districtId");
+CREATE INDEX "activite_canceledbyid_idx" ON "Activite"("canceledById");
+CREATE INDEX "etape_activiteid_idx" ON "Etape"("activiteId");
+CREATE INDEX "postebudget_activiteid_idx" ON "PosteBudget"("activiteId");
+CREATE INDEX "contribution_activiteid_idx" ON "Contribution"("activiteId");
+CREATE INDEX "contribution_contributeurid_idx" ON "Contribution"("contributeurId");

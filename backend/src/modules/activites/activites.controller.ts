@@ -195,6 +195,10 @@ export const createEtape = async (req: Request, res: Response) => {
 };
 
 export const updateEtape = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty())
+    return error(res, "Données invalides", 400, errors.array());
+
   try {
     const data = await activitesService.updateEtape(
       req.params.etapeId as string,
@@ -247,6 +251,10 @@ export const createPosteBudget = async (req: Request, res: Response) => {
 };
 
 export const updatePosteBudget = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty())
+    return error(res, "Données invalides", 400, errors.array());
+
   try {
     const data = await activitesService.updatePosteBudget(
       req.params.posteId as string,
