@@ -39,44 +39,49 @@ Légende : ✅ Terminé · 🔄 En cours · ⬜ À faire
 
 ### Module Membre
 
-- ⬜ `GET    /api/membres` — Liste (pagination + filtres)
-- ⬜ `POST   /api/membres` — Créer un membre
-- ⬜ `GET    /api/membres/:id` — Fiche membre
-- ⬜ `PATCH  /api/membres/:id` — Modifier
-- ⬜ `DELETE /api/membres/:id` — Supprimer
-- ⬜ Upload photo de profil
+- ✅ `GET    /api/membres` — Liste (pagination + filtres)
+- ✅ `POST   /api/membres` — Créer un membre
+- ✅ `GET    /api/membres/:id` — Fiche membre
+- ✅ `PATCH  /api/membres/:id` — Modifier
+- ✅ `DELETE /api/membres/:id` — Supprimer
+- ✅ Upload photo de profil
 
 ### Module Cotisation
 
-- ⬜ CRUD Campagnes
-- ⬜ CRUD Types de cotisation
-- ⬜ CRUD Cotisations par membre
-- ⬜ Gestion des tranches de paiement
+- ✅ CRUD Campagnes
+- ✅ CRUD Types de cotisation
+- ✅ CRUD Cotisations par membre
+- ✅ Gestion des tranches de paiement
 
 ### Module Finance
 
-- ⬜ CRUD Comptes financiers
-- ⬜ Enregistrer une transaction
-- ⬜ Historique des transactions par compte
-- ⬜ Tableau de bord financier (soldes)
+- ✅ CRUD Comptes financiers
+- ✅ Enregistrer une transaction
+- ✅ Historique des transactions par compte
+- ✅ Tableau de bord financier (soldes)
 
 ### Module Blog
 
-- ⬜ CRUD Posts (avec upload illustration)
-- ⬜ Publication / dépublication
-- ⬜ Liste publique des articles publiés
+- ✅ CRUD Posts (avec upload illustration)
+- ✅ Publication / dépublication
+- ✅ Liste publique des articles publiés
 
 ### Module Voting
 
-- ⬜ CRUD Élections
-- ⬜ Ajouter des choix à une élection
-- ⬜ Voter (authentifié ou par token)
-- ⬜ Résultats d'une élection
+- ✅ CRUD Élections
+- ✅ Ajouter des choix à une élection
+- ✅ Voter (authentifié ou par token)
+- ✅ Résultats d'une élection
 
 ### Module Activités
 
-- ⬜ CRUD Activités
-- ⬜ Upload illustration
+- ✅ CRUD Activités (avec upload illustration)
+- ✅ Marquer terminée / annuler
+- ✅ Gestion des étapes (Etape) avec validation de dates
+- ✅ Gestion des postes budgétaires (PosteBudget)
+- ✅ Contributions (identifiées ou anonymes)
+- ✅ Routes publiques (liste + détail publique)
+- ✅ Statistiques globales
 
 ---
 
