@@ -14,7 +14,7 @@ import cotisRoutes from "../modules/cotisation/cotisation.routes";
 import financeRoutes from "../modules/finance/finance.routes";
 import blogRoutes from "../modules/blog/blog.routes";
 import votingRoutes from "../modules/voting/voting.routes";
-// import activitesRoutes from '../modules/activites/activites.routes';
+import activitesRoutes from '../modules/activites/activites.routes';
 
 const router = Router();
 
@@ -25,7 +25,7 @@ router.use("/cotisations", cotisRoutes);
 router.use("/finance", financeRoutes);
 router.use("/blog", blogRoutes);
 router.use("/voting", votingRoutes);
-// router.use('/activites',   activitesRoutes);
+router.use('/activites', activitesRoutes);
 
 // Route de test pour confirmer que le routeur fonctionne
 router.get("/", (_req, res) => {
