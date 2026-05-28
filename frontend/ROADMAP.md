@@ -13,21 +13,21 @@
 
 ---
 
-## 🔄 Phase 1 — Fondations
+## ✅ Phase 1 — Fondations
 
 > Objectif : projet opérationnel, layout fonctionnel, navigation protégée
 
-- [ ] Init Vite + React 18 + TypeScript
-- [ ] Installation toutes les dépendances
-- [ ] Configuration TailwindCSS v3 + DaisyUI v4 (thème RCR personnalisé)
-- [ ] Helper `cn()` (clsx + tailwind-merge)
-- [ ] Instance Axios avec interceptors JWT (attach token, redirect 401)
-- [ ] Zustand store `auth` (user, token, login, logout)
-- [ ] Zustand store `ui` (sidebar collapse, thème dark/light)
-- [ ] Types TypeScript globaux (`Membre`, `User`, `ApiResponse<T>`...)
-- [ ] React Router v6 — routes publiques et protégées (`PrivateRoute`)
-- [ ] Layout principal : Sidebar + Navbar + zone de contenu
-- [ ] Composants UI de base : `Button`, `Badge`, `Modal`, `Input`, `Spinner`, `Avatar`
+- [x] Init Vite + React 18 + TypeScript
+- [x] Installation toutes les dépendances
+- [x] Configuration TailwindCSS v3 + DaisyUI v4 (thème RCR personnalisé)
+- [x] Helper `cn()` (clsx + tailwind-merge)
+- [x] Instance Axios avec interceptors JWT (attach token, redirect 401)
+- [x] Zustand store `auth` (user, token, login, logout)
+- [x] Zustand store `ui` (sidebar collapse, thème dark/light)
+- [x] Types TypeScript globaux (`Membre`, `User`, `ApiResponse<T>`...)
+- [x] React Router v6 — routes publiques et protégées (`PrivateRoute`)
+- [x] Layout principal : Sidebar + Navbar + zone de contenu
+- [x] Composants UI de base : `Button`, `Badge`, `Modal`, `Input`, `Spinner`, `Avatar`
 
 ---
 
