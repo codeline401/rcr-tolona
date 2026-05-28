@@ -14,10 +14,12 @@ export interface PaginationMeta {
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
+export type UserRole = 'ADMIN' | 'MODERATOR' | 'MEMBER'
+
 export interface User {
   id: string
   email: string
-  role: 'ADMIN' | 'MODERATOR' | 'MEMBER'
+  role: UserRole
   membreId?: string
   createdAt: string
 }

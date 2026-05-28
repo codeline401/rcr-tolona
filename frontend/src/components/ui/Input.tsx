@@ -26,14 +26,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             error && 'input-error',
             className,
           )}
+          aria-invalid={Boolean(error)}
+          aria-describedby={(error || helpText) ? `${inputId}-desc` : undefined}
           {...props}
         />
         {(error || helpText) && (
           <label className="label">
             {error ? (
-              <span className="label-text-alt text-error">{error}</span>
+              <span id={`${inputId}-desc`} className="label-text-alt text-error">{error}</span>
             ) : (
-              <span className="label-text-alt text-base-content/60">{helpText}</span>
+              <span id={`${inputId}-desc`} className="label-text-alt text-base-content/60">{helpText}</span>
             )}
           </label>
         )}

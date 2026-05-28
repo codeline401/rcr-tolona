@@ -70,6 +70,7 @@ export default function Sidebar() {
                   )
                 }
                 title={sidebarCollapsed ? label : undefined}
+                aria-label={sidebarCollapsed ? label : undefined}
               >
                 <Icon className="h-5 w-5 shrink-0" />
                 {!sidebarCollapsed && <span>{label}</span>}
