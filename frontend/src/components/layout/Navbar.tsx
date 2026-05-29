@@ -3,20 +3,26 @@ import {
   SunIcon,
   MoonIcon,
   ArrowRightOnRectangleIcon,
-} from '@heroicons/react/24/outline'
-import { useAuthStore } from '../../stores/authStore'
-import { useUiStore } from '../../stores/uiStore'
-import Avatar from '../ui/Avatar'
+} from "@heroicons/react/24/outline";
+import { useAuthStore } from "../../stores/authStore";
+import { useUiStore } from "../../stores/uiStore";
+import Avatar from "../ui/Avatar";
 
+/**
+ * Barre de navigation supérieure collante.
+ * Affiche le nom de l'utilisateur connecté, le bouton de bascule de thème,
+ * les notifications et un menu déroulant avec la déconnexion.
+ */
 export default function Navbar() {
-  const { user, logout } = useAuthStore()
-  const { theme, toggleTheme } = useUiStore()
+  const { user, logout } = useAuthStore();
+  const { theme, toggleTheme } = useUiStore();
 
   return (
     <header className="navbar sticky top-0 z-30 border-b border-base-300 bg-base-100 px-4 shadow-sm">
       <div className="flex-1">
         <span className="text-sm text-base-content/60">
-          Bienvenue, <span className="font-semibold text-base-content">{user?.email}</span>
+          Bienvenue,{" "}
+          <span className="font-semibold text-base-content">{user?.email}</span>
         </span>
       </div>
 
@@ -27,7 +33,7 @@ export default function Navbar() {
           onClick={toggleTheme}
           aria-label="Toggle theme"
         >
-          {theme === 'rcr' ? (
+          {theme === "rcr" ? (
             <MoonIcon className="h-5 w-5" />
           ) : (
             <SunIcon className="h-5 w-5" />
@@ -35,14 +41,17 @@ export default function Navbar() {
         </button>
 
         {/* Notifications */}
-        <button className="btn btn-ghost btn-sm btn-circle" aria-label="Notifications">
+        <button
+          className="btn btn-ghost btn-sm btn-circle"
+          aria-label="Notifications"
+        >
           <BellIcon className="h-5 w-5" />
         </button>
 
         {/* User menu */}
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn btn-ghost btn-sm btn-circle">
-            <Avatar name={user?.email ?? 'U'} size="sm" />
+            <Avatar name={user?.email ?? "U"} size="sm" />
           </label>
           <ul
             tabIndex={0}
@@ -61,5 +70,5 @@ export default function Navbar() {
         </div>
       </div>
     </header>
-  )
+  );
 }

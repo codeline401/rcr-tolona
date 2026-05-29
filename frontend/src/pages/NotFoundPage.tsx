@@ -1,5 +1,9 @@
 import { Link } from 'react-router-dom'
 
+/**
+ * Page 404 — affichée pour toute route inconnue.
+ * Propose un lien de retour vers le dashboard.
+ */
 export default function NotFoundPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-base-200 text-center">
