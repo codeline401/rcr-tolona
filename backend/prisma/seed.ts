@@ -24,47 +24,47 @@ async function main() {
   const districtsPath = path.join(FIXTURES_DIR, "Districts.json");
 
   if (!fs.existsSync(districtsPath)) {
-    console.log("⚠️  Fichier Districts.json introuvable dans prisma/fixtures/");
-    console.log("   Copie les fichiers depuis rcr-django/rcr/fixtures/");
-    return;
-  }
+    console.warn(
+      "⚠️  Fichier Districts.json introuvable — import géographique ignoré",
+    );
+  } else {
+    const rawDistricts = JSON.parse(fs.readFileSync(districtsPath, "utf-8"));
+    console.log(`   → ${rawDistricts.length} districts trouvés`);
 
-  const rawDistricts = JSON.parse(fs.readFileSync(districtsPath, "utf-8"));
-  console.log(`   → ${rawDistricts.length} districts trouvés`);
+    // TODO: adapter selon la structure exacte des fixtures Django
+    // Pour l'instant on crée des données de test manuellement
 
-  // TODO: adapter selon la structure exacte des fixtures Django
-  // Pour l'instant on crée des données de test manuellement
+    // Créer une province de test
+    const province = await prisma.province.upsert({
+      where: { name: "Analamanga" },
+      update: {},
+      create: { name: "Analamanga" },
+    });
 
-  // Créer une province de test
-  const province = await prisma.province.upsert({
-    where: { name: "Analamanga" },
-    update: {},
-    create: { name: "Analamanga" },
-  });
+    // Créer une région de test
+    const region = await prisma.region.upsert({
+      where: { name: "Analamanga" },
+      update: {},
+      create: {
+        name: "Analamanga",
+        code: "A",
+        order: 1,
+        provinceId: province.id,
+      },
+    });
 
-  // Créer une région de test
-  const region = await prisma.region.upsert({
-    where: { name: "Analamanga" },
-    update: {},
-    create: {
-      name: "Analamanga",
-      code: "A",
-      order: 1,
-      provinceId: province.id,
-    },
-  });
-
-  // Créer un district de test
-  await prisma.district.upsert({
-    where: { name: "Antananarivo Renivohitra" },
-    update: {},
-    create: {
-      name: "Antananarivo Renivohitra",
-      code: "1",
-      isValid: true,
-      regionId: region.id,
-    },
-  });
+    // Créer un district de test
+    await prisma.district.upsert({
+      where: { name: "Antananarivo Renivohitra" },
+      update: {},
+      create: {
+        name: "Antananarivo Renivohitra",
+        code: "1",
+        isValid: true,
+        regionId: region.id,
+      },
+    });
+  } // end geo block
 
   console.log("✅ Seed géographique terminé");
 
@@ -76,13 +76,34 @@ async function main() {
 async function seedUsers() {
   console.log("\n👤 Création des utilisateurs de test...");
 
-  const adminPassword = await bcrypt.hash("Admin1234!", 12);
-  const memberPassword = await bcrypt.hash("Member1234!", 12);
+  const isLocalDev =
+    process.env.LOCAL_DEV === "true" || process.env.NODE_ENV !== "production";
+  const rawAdminPw = process.env.SEED_ADMIN_PASSWORD;
+  const rawMemberPw = process.env.SEED_MEMBER_PASSWORD;
+
+  if (!rawAdminPw || !rawMemberPw) {
+    if (!isLocalDev) {
+      throw new Error(
+        "SEED_ADMIN_PASSWORD et SEED_MEMBER_PASSWORD doivent être définis en production.",
+      );
+    }
+    console.warn(
+      "⚠️  Env vars SEED_ADMIN_PASSWORD / SEED_MEMBER_PASSWORD absentes — valeurs par défaut utilisées (local uniquement)",
+    );
+  }
+
+  const adminPassword = await bcrypt.hash(rawAdminPw ?? "Admin1234!", 12);
+  const memberPassword = await bcrypt.hash(rawMemberPw ?? "Member1234!", 12);
 
   // Compte super-administrateur
   const admin = await prisma.user.upsert({
     where: { email: "admin@rcr.mg" },
-    update: {},
+    update: {
+      password: adminPassword,
+      isActive: true,
+      isStaff: true,
+      isSuperuser: true,
+    },
     create: {
       email: "admin@rcr.mg",
       password: adminPassword,
@@ -91,12 +112,17 @@ async function seedUsers() {
       isSuperuser: true,
     },
   });
-  console.log(`   ✅ Admin créé : ${admin.email}`);
+  console.log(`   ✅ Admin upserted : ${admin.email}`);
 
   // Compte modérateur
   const staff = await prisma.user.upsert({
     where: { email: "staff@rcr.mg" },
-    update: {},
+    update: {
+      password: memberPassword,
+      isActive: true,
+      isStaff: true,
+      isSuperuser: false,
+    },
     create: {
       email: "staff@rcr.mg",
       password: memberPassword,
@@ -105,11 +131,12 @@ async function seedUsers() {
       isSuperuser: false,
     },
   });
-  console.log(`   ✅ Staff créé  : ${staff.email}`);
+  console.log(`   ✅ Staff upserted  : ${staff.email}`);
 
-  console.log("\n🔑 Identifiants de test :");
-  console.log("   admin@rcr.mg  →  Admin1234!");
-  console.log("   staff@rcr.mg  →  Member1234!");
+  console.log("\n🔑 Emails : admin@rcr.mg · staff@rcr.mg");
+  console.log(
+    "   Mots de passe depuis SEED_ADMIN_PASSWORD / SEED_MEMBER_PASSWORD",
+  );
 }
 
 main()

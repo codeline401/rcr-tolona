@@ -34,9 +34,10 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "rcr-auth",
+      // Token JWT exclu du localStorage (XSS) — conservé uniquement en mémoire.
+      // À la prochaine ouverture de page, le token sera null → 401 → logout automatique.
       partialize: (state) => ({
         user: state.user,
-        token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
     },

@@ -34,6 +34,11 @@ export default function Sidebar() {
     <aside
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
+      onFocus={() => setIsOpen(true)}
+      onBlur={(e) => {
+        // Only close when focus leaves the aside entirely
+        if (!e.currentTarget.contains(e.relatedTarget)) setIsOpen(false);
+      }}
       className={cn(
         "fixed inset-y-0 left-0 z-50 flex flex-col bg-neutral text-neutral-content shadow-xl transition-all duration-300 overflow-hidden",
         isOpen ? "w-64" : "w-16",
@@ -47,6 +52,7 @@ export default function Sidebar() {
           className="h-8 w-8 shrink-0 object-contain"
         />
         <span
+          aria-hidden={!isOpen}
           className={cn(
             "ml-3 whitespace-nowrap text-lg font-bold tracking-wide text-primary-content transition-all duration-300",
             isOpen

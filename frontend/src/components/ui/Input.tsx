@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useId } from "react";
 import { cn } from "../../lib/cn";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -17,7 +17,12 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
  */
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, helpText, className, id, ...props }, ref) => {
-    const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
+    const generatedId = useId();
+    const inputId =
+      id ??
+      (label
+        ? label.toLowerCase().replace(/\s+/g, "-") + "-" + generatedId
+        : generatedId);
 
     return (
       <div className="form-control w-full">

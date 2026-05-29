@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, type Location } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 import { Eye, EyeOff, LogIn, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "../stores/authStore";
 import api from "../lib/axios";
@@ -13,9 +14,10 @@ import rcrBg from "../assets/rcr-bg.jpg";
  * @param credentials - Email et mot de passe de l'utilisateur.
  * @returns Les données d'authentification (token + user).
  */
-async function loginRequest(
-  credentials: { email: string; password: string },
-): Promise<AuthTokenPayload> {
+async function loginRequest(credentials: {
+  email: string;
+  password: string;
+}): Promise<AuthTokenPayload> {
   const { data } = await api.post<ApiResponse<AuthTokenPayload>>(
     "/auth/login",
     credentials,
@@ -51,8 +53,8 @@ export default function LoginPage() {
   });
 
   const errorMessage =
-    (loginMutation.error as { response?: { data?: { message?: string } } })
-      ?.response?.data?.message ?? (loginMutation.isError ? "Identifiants incorrects" : "");
+    (loginMutation.error as AxiosError<{ message?: string }>)?.response?.data
+      ?.message ?? (loginMutation.isError ? "Identifiants incorrects" : "");
 
   /**
    * Gestionnaire de soumission du formulaire.
@@ -172,13 +174,15 @@ export default function LoginPage() {
                 >
                   Mot de passe
                 </label>
-                <a
-                  href="#"
-                  className="text-xs text-white/50 hover:text-white transition-colors"
-                  tabIndex={-1}
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled="true"
+                  className="text-xs text-white/50 hover:text-white/70 transition-colors cursor-not-allowed"
+                  aria-label="Réinitialisation de mot de passe (bientôt disponible)"
                 >
                   Mot de passe oublié ?
-                </a>
+                </button>
               </div>
               <div className="relative">
                 <input
